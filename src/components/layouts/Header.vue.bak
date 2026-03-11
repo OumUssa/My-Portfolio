@@ -1,0 +1,334 @@
+<template>
+  <nav class="navbar" :class="{ scrolled: isScrolled }">
+    <div class="navbar-container">
+      <div class="logo">
+        <a href="/" @click.prevent="onNavClick('home')">
+          <span class="logo-icon">O</span>
+          <span class="logo-text">Oum<span class="logo-dot">.</span></span>
+        </a>
+      </div>
+      <ul class="nav-menu" :class="{ active: mobileMenuOpen }">
+        <li
+          v-for="link in navLinks"
+          :key="link.id"
+          class="nav-item"
+          :class="{ active: activeSection === link.id }">
+          <a
+            href="#"
+            class="nav-link"
+            @click.prevent="onNavClick(link.id)">
+            {{ link.label }}
+          </a>
+        </li>
+        <li class="nav-item nav-cta">
+          <a href="#" class="btn-hire" @click.prevent="onNavClick('contact')">
+            Hire Me
+          </a>
+        </li>
+      </ul>
+      <div
+        class="hamburger"
+        :class="{ active: mobileMenuOpen }"
+        @click="toggleMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </div>
+  </nav>
+</template>
+
+<script setup>
+import { ref, onMounted, onUnmounted, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
+
+const router = useRouter();
+const route = useRoute();
+
+const navLinks = [
+  { id: "home", label: "Home" },
+  { id: "about", label: "About" },
+  { id: "projects", label: "Projects" },
+  { id: "services", label: "Services" },
+  { id: "contact", label: "Contact" },
+];
+
+const mobileMenuOpen = ref(false);
+const isScrolled = ref(false);
+const activeSection = ref("home");
+
+const toggleMenu = () => {
+  mobileMenuOpen.value = !mobileMenuOpen.value;
+};
+
+const scrollToSection = (id) => {
+  setTimeout(() => {
+    const el = document.getElementById(id);
+    if (el) el.scrollIntoView({ behavior: "smooth" });
+  }, 300);
+};
+
+const onNavClick = (id) => {
+  mobileMenuOpen.value = false;
+  activeSection.value = id;
+
+  if (id === "about") {
+    router.push("/About-Me");
+  } else if (route.path === "/Home" || route.path === "/") {
+    scrollToSection(id);
+  } else {
+    router.push("/Home").then(() => scrollToSection(id));
+  }
+};
+
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 50;
+};
+
+watch(
+  () => route.path,
+  (path) => {
+    if (path === "/About-Me") activeSection.value = "about";
+    else if (path === "/Home" || path === "/") activeSection.value = "home";
+  },
+  { immediate: true },
+);
+
+onMounted(() => window.addEventListener("scroll", handleScroll));
+onUnmounted(() => window.removeEventListener("scroll", handleScroll));
+</script>
+
+<style scoped>
+/* ── Navbar Base ── */
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 1rem 0;
+  transition: all 0.35s ease;
+}
+
+.navbar.scrolled {
+  background: rgba(15, 23, 42, 0.95);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.15);
+  padding: 0.6rem 0;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ── Logo ── */
+.logo a {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+}
+
+.logo a:hover {
+  transform: translateY(-1px);
+}
+
+.logo-icon {
+  width: 36px;
+  height: 36px;
+  background: #6366f1;
+  color: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.logo-text {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.5px;
+}
+
+.logo-dot {
+  color: #6366f1;
+}
+
+/* ── Nav Menu ── */
+.nav-menu {
+  display: flex;
+  list-style: none;
+  gap: 0.3rem;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.nav-item .nav-link {
+  color: rgba(255, 255, 255, 0.65);
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  display: block;
+}
+
+.nav-item .nav-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.nav-item.active .nav-link {
+  color: #fff;
+  background: rgba(99, 102, 241, 0.2);
+}
+
+/* ── Hire Me Button ── */
+.btn-hire {
+  display: inline-block;
+  padding: 0.5rem 1.3rem;
+  background: #6366f1;
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  margin-left: 0.6rem;
+  transition: all 0.25s ease;
+}
+
+.btn-hire:hover {
+  background: #4f46e5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+}
+
+/* ── Scrolled State ── */
+.navbar.scrolled .nav-item .nav-link {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.navbar.scrolled .nav-item .nav-link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.navbar.scrolled .nav-item.active .nav-link {
+  color: #fff;
+  background: rgba(99, 102, 241, 0.3);
+}
+
+.navbar.scrolled .logo-text {
+  color: #fff;
+}
+
+/* ── Hamburger ── */
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  gap: 5px;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+
+.hamburger:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.hamburger span {
+  width: 20px;
+  height: 2px;
+  background: #fff;
+  border-radius: 2px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.hamburger.active span:nth-child(1) {
+  transform: rotate(45deg) translate(5px, 5px);
+}
+
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburger.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(5px, -5px);
+}
+
+/* ── Mobile ── */
+@media (max-width: 768px) {
+  .hamburger {
+    display: flex;
+  }
+
+  .nav-menu {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 300px;
+    height: 100dvh;
+    flex-direction: column;
+    background: #0f172a;
+    padding: 5rem 1.5rem 2rem;
+    gap: 0.25rem;
+    transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.3);
+    align-items: stretch;
+  }
+
+  .nav-menu.active {
+    right: 0;
+  }
+
+  .nav-item .nav-link {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 1rem;
+    padding: 0.9rem 1.2rem;
+    border-radius: 10px;
+  }
+
+  .nav-item .nav-link:hover {
+    background: rgba(99, 102, 241, 0.15);
+    color: #fff;
+  }
+
+  .nav-item.active .nav-link {
+    background: rgba(99, 102, 241, 0.2);
+    color: #fff;
+  }
+
+  .nav-cta {
+    margin-top: 0.5rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+  }
+
+  .btn-hire {
+    display: block;
+    text-align: center;
+    margin-left: 0;
+    padding: 0.85rem;
+    border-radius: 10px;
+  }
+
+  .navbar-container {
+    padding: 0 1.2rem;
+  }
+}
+</style>

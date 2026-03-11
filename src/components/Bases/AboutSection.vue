@@ -1,30 +1,20 @@
 <template>
-  <!-- Hero Banner -->
-  <section class="hero-banner">
-    <div class="hero-overlay"></div>
-    <div class="container hero-content">
-      <span class="hero-label">About Me</span>
-      <h1 class="hero-title">Know Me Better</h1>
-      <div class="hero-line"></div>
+  <section class="about-hero">
+    <div class="about-hero-bg"></div>
+    <div class="about-hero-inner">
+      <span class="about-tag">About Me</span>
+      <h1 class="about-heading">Know Me Better</h1>
     </div>
   </section>
 
-  <!-- Profile Card (overlapping banner) -->
-  <section class="profile-section">
+  <section class="profile">
     <div class="container">
       <div class="profile-card">
-        <!-- Profile Image -->
-        <div class="profile-image-wrapper">
-          <div class="image-frame">
-            <!-- Replace the src below with your own photo -->
-            <img :src="profileImage" alt="My Photo" class="profile-image" />
-            <div class="image-decoration"></div>
-          </div>
+        <div class="profile-img-wrap">
+          <img :src="profileImage" alt="Profile Photo" class="profile-img" />
         </div>
-
-        <!-- Profile Info -->
         <div class="profile-info">
-          <h2>Hi, I'm <span class="accent">Your Name</span></h2>
+          <h2>Hi, I'm <span class="accent">Oum Ussa</span></h2>
           <p class="role">Full-Stack Developer</p>
           <p class="bio">
             I'm a passionate full-stack developer with a love for creating
@@ -33,37 +23,35 @@
           </p>
           <p class="bio">
             With a strong foundation in both front-end and back-end development,
-            I bring ideas to life through clean code and thoughtful design
-            decisions.
+            I bring ideas to life through clean code and thoughtful design decisions.
           </p>
-
           <div class="info-grid">
             <div class="info-item">
               <i class="bi bi-person"></i>
               <div>
                 <span class="info-label">Name</span>
-                <span class="info-value">Oum Ussa</span>
+                <span class="info-val">Oum Ussa</span>
               </div>
             </div>
             <div class="info-item">
               <i class="bi bi-envelope"></i>
               <div>
                 <span class="info-label">Email</span>
-                <span class="info-value">oumussa719@gmail.com</span>
+                <span class="info-val">oumussa719@gmail.com</span>
               </div>
             </div>
             <div class="info-item">
               <i class="bi bi-geo-alt"></i>
               <div>
                 <span class="info-label">Location</span>
-                <span class="info-value">Your City, Country</span>
+                <span class="info-val">Your City, Country</span>
               </div>
             </div>
             <div class="info-item">
               <i class="bi bi-calendar3"></i>
               <div>
                 <span class="info-label">Experience</span>
-                <span class="info-value">1+ Years</span>
+                <span class="info-val">1+ Years</span>
               </div>
             </div>
           </div>
@@ -72,17 +60,14 @@
     </div>
   </section>
 
-  <!-- Skills Section -->
-  <section class="skills-section">
+  <section class="skills">
     <div class="container">
-      <div class="section-header">
-        <span class="label">My Expertise</span>
+      <div class="section-head">
+        <span class="section-tag">My Expertise</span>
         <h2 class="section-title">Skills & Technologies</h2>
-        <div class="title-line"></div>
       </div>
-
       <div class="skills-grid">
-        <div v-for="skill in skills" :key="skill.name" class="skill-card">
+        <div v-for="skill in skills" :key="skill.name" class="skill-item">
           <div class="skill-icon">
             <i :class="skill.icon"></i>
           </div>
@@ -90,7 +75,7 @@
           <div class="skill-bar">
             <div class="skill-fill" :style="{ width: skill.level }"></div>
           </div>
-          <span class="skill-percent">{{ skill.level }}</span>
+          <span class="skill-pct">{{ skill.level }}</span>
         </div>
       </div>
     </div>
@@ -100,9 +85,6 @@
 <script setup>
 import { ref } from "vue";
 
-// Replace this with the path to your own image
-// e.g. import myPhoto from '@/assets/my-photo.jpg'
-// or use a URL: const profileImage = ref('https://your-photo-url.jpg')
 const profileImage = ref(
   "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
 );
@@ -118,56 +100,50 @@ const skills = [
 </script>
 
 <style scoped>
-/* ── Hero Banner ── */
-.hero-banner {
+/* Hero */
+.about-hero {
   position: relative;
-  background: #6366f1;
-  padding: 10rem 2rem 8rem;
+  background: #0a0a1a;
+  padding: 9rem 2rem 7rem;
   text-align: center;
   overflow: hidden;
 }
 
-.hero-overlay {
+.about-hero-bg {
   position: absolute;
   inset: 0;
-  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  background:
+    radial-gradient(ellipse at 30% 60%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+    radial-gradient(ellipse at 70% 30%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
 }
 
-.hero-content {
+.about-hero-inner {
   position: relative;
   z-index: 1;
 }
 
-.hero-label {
-  font-size: 0.8rem;
+.about-tag {
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 3px;
-  color: rgba(255, 255, 255, 0.8);
+  color: rgba(255, 255, 255, 0.6);
   display: block;
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.75rem;
 }
 
-.hero-title {
+.about-heading {
   font-size: 3rem;
   font-weight: 800;
   color: #fff;
-  margin-bottom: 1rem;
+  letter-spacing: -0.5px;
 }
 
-.hero-line {
-  width: 60px;
-  height: 4px;
-  background: rgba(255, 255, 255, 0.5);
-  border-radius: 2px;
-  margin: 0 auto;
-}
-
-/* ── Profile Section ── */
-.profile-section {
+/* Profile */
+.profile {
   padding: 0 2rem 4rem;
   background: #f8fafc;
-  margin-top: -5rem;
+  margin-top: -4rem;
   position: relative;
   z-index: 2;
 }
@@ -179,55 +155,32 @@ const skills = [
 
 .profile-card {
   background: #fff;
-  border-radius: 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-  padding: 3rem;
+  border-radius: 16px;
+  border: 1px solid #f1f5f9;
+  padding: 2.5rem;
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 3rem;
+  grid-template-columns: 240px 1fr;
+  gap: 2.5rem;
   align-items: center;
 }
 
-/* ── Profile Image ── */
-.profile-image-wrapper {
+.profile-img-wrap {
   display: flex;
   justify-content: center;
 }
 
-.image-frame {
-  position: relative;
-  width: 240px;
-  height: 240px;
-}
-
-.profile-image {
-  width: 100%;
-  height: 100%;
+.profile-img {
+  width: 220px;
+  height: 220px;
   object-fit: cover;
-  border-radius: 20px;
-  position: relative;
-  z-index: 1;
-  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.2);
+  border-radius: 14px;
 }
 
-.image-decoration {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  right: -12px;
-  bottom: -12px;
-  border: 3px solid #6366f1;
-  border-radius: 20px;
-  z-index: 0;
-  opacity: 0.3;
-}
-
-/* ── Profile Info ── */
 .profile-info h2 {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
   font-weight: 700;
   color: #1e293b;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.25rem;
 }
 
 .accent {
@@ -235,147 +188,135 @@ const skills = [
 }
 
 .role {
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: 0.9rem;
   color: #6366f1;
-  margin-bottom: 1.2rem;
+  font-weight: 500;
+  margin-bottom: 1rem;
 }
 
 .bio {
   color: #64748b;
-  line-height: 1.8;
-  margin-bottom: 0.8rem;
-  font-size: 0.95rem;
+  line-height: 1.7;
+  margin-bottom: 0.6rem;
+  font-size: 0.9rem;
 }
 
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.6rem 0;
+  gap: 0.65rem;
 }
 
 .info-item i {
-  font-size: 1.1rem;
+  font-size: 1rem;
   color: #6366f1;
-  width: 38px;
-  height: 38px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(99, 102, 241, 0.08);
-  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.06);
+  border-radius: 8px;
   flex-shrink: 0;
 }
 
 .info-label {
   display: block;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
-.info-value {
+.info-val {
   display: block;
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   color: #1e293b;
   font-weight: 600;
 }
 
-/* ── Skills Section ── */
-.skills-section {
-  padding: 4rem 2rem 5rem;
+/* Skills */
+.skills {
+  padding: 3rem 2rem 5rem;
   background: #f8fafc;
 }
 
-.section-header {
+.section-head {
   text-align: center;
-  margin-bottom: 3rem;
+  margin-bottom: 2.5rem;
 }
 
-.label {
-  font-size: 0.8rem;
+.section-tag {
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 2px;
   color: #6366f1;
-  display: block;
-  margin-bottom: 0.5rem;
 }
 
 .section-title {
-  font-size: 2.2rem;
-  font-weight: 800;
+  font-size: 2rem;
+  font-weight: 700;
   color: #1e293b;
-  margin-bottom: 1rem;
-}
-
-.title-line {
-  width: 60px;
-  height: 4px;
-  background: #6366f1;
-  border-radius: 2px;
-  margin: 0 auto;
+  margin-top: 0.35rem;
 }
 
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.2rem;
+  gap: 1rem;
 }
 
-.skill-card {
+.skill-item {
   background: #fff;
-  padding: 1.2rem 1.4rem;
-  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  border-radius: 10px;
   display: flex;
   align-items: center;
-  gap: 0.8rem;
-  border: 1px solid #e2e8f0;
-  transition: all 0.3s ease;
+  gap: 0.75rem;
+  border: 1px solid #f1f5f9;
+  transition: all 0.2s ease;
 }
 
-.skill-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.1);
-  border-color: #c7d2fe;
+.skill-item:hover {
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
 .skill-icon {
-  width: 42px;
-  height: 42px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(99, 102, 241, 0.08);
-  border-radius: 10px;
+  background: rgba(99, 102, 241, 0.06);
+  border-radius: 8px;
   flex-shrink: 0;
 }
 
 .skill-icon i {
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   color: #6366f1;
 }
 
 .skill-name {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   color: #334155;
   flex: 1;
 }
 
 .skill-bar {
-  width: 60px;
-  height: 6px;
+  width: 50px;
+  height: 5px;
   background: #e2e8f0;
   border-radius: 3px;
   overflow: hidden;
@@ -386,72 +327,37 @@ const skills = [
   height: 100%;
   background: #6366f1;
   border-radius: 3px;
-  transition: width 1s ease;
 }
 
-.skill-percent {
-  font-size: 0.75rem;
+.skill-pct {
+  font-size: 0.72rem;
   font-weight: 700;
   color: #6366f1;
-  width: 32px;
+  width: 28px;
   text-align: right;
   flex-shrink: 0;
 }
 
-/* ── Responsive ── */
 @media (max-width: 900px) {
+  .about-hero { padding: 7rem 1.5rem 5.5rem; }
+  .about-heading { font-size: 2.4rem; }
   .profile-card {
     grid-template-columns: 1fr;
     text-align: center;
-    padding: 2.5rem 2rem;
   }
-
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .info-item {
-    justify-content: center;
-  }
-
-  .skills-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .info-grid { grid-template-columns: 1fr; }
+  .info-item { justify-content: center; }
+  .skills-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
-@media (max-width: 600px) {
-  .hero-banner {
-    padding: 8rem 1.5rem 6rem;
-  }
-
-  .hero-title {
-    font-size: 2.2rem;
-  }
-
-  .profile-card {
-    padding: 2rem 1.5rem;
-    gap: 2rem;
-  }
-
-  .image-frame {
-    width: 180px;
-    height: 180px;
-  }
-
-  .profile-info h2 {
-    font-size: 1.5rem;
-  }
-
-  .skills-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .section-title {
-    font-size: 1.8rem;
-  }
-
-  .skills-section {
-    padding: 3rem 1.5rem 4rem;
-  }
+@media (max-width: 576px) {
+  .about-hero { padding: 6rem 1.5rem 4.5rem; }
+  .about-heading { font-size: 2rem; }
+  .profile-card { padding: 2rem 1.5rem; }
+  .profile-img { width: 180px; height: 180px; }
+  .profile-info h2 { font-size: 1.35rem; }
+  .skills-grid { grid-template-columns: 1fr; }
+  .skills { padding: 2.5rem 1.5rem 4rem; }
+  .section-title { font-size: 1.6rem; }
 }
 </style>

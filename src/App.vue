@@ -10,7 +10,6 @@ import Header from "@/components/layouts/Header.vue";
 </template>
 
 <style>
-/* ── Global Reset & Base ── */
 *,
 *::before,
 *::after {
@@ -25,15 +24,7 @@ html {
 }
 
 body {
-  font-family:
-    "Inter",
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: #1e293b;
   background: #fff;
   line-height: 1.6;

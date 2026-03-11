@@ -1,23 +1,18 @@
 <template>
   <section id="services" class="services">
     <div class="container">
-      <div class="section-header">
-        <span class="label">What I Do</span>
+      <div class="section-head">
+        <span class="section-tag">What I Do</span>
         <h2 class="section-title">My Services</h2>
-        <div class="title-line"></div>
       </div>
 
-      <div class="services-grid">
-        <div
-          v-for="service in services"
-          :key="service.title"
-          class="service-card">
-          <div class="service-icon">
+      <div class="grid">
+        <div v-for="service in services" :key="service.title" class="card">
+          <div class="card-icon">
             <i :class="service.icon"></i>
           </div>
           <h3>{{ service.title }}</h3>
           <p>{{ service.desc }}</p>
-          <div class="card-accent"></div>
         </div>
       </div>
     </div>
@@ -62,129 +57,91 @@ const services = [
 <style scoped>
 .services {
   padding: 6rem 2rem;
-  background: #fff;
+  background: #f8fafc;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
 }
 
-.section-header {
+.section-head {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 3rem;
 }
 
-.label {
-  font-size: 0.8rem;
+.section-tag {
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 2px;
   color: #6366f1;
-  display: block;
-  margin-bottom: 0.5rem;
 }
 
 .section-title {
-  font-size: 2.5rem;
-  font-weight: 800;
+  font-size: 2.2rem;
+  font-weight: 700;
   color: #1e293b;
-  margin-bottom: 1rem;
+  margin-top: 0.35rem;
 }
 
-.title-line {
-  width: 60px;
-  height: 4px;
-  background: #6366f1;
-  border-radius: 2px;
-  margin: 0 auto;
-}
-
-.services-grid {
+.grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
-.service-card {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 16px;
-  padding: 2rem;
-  position: relative;
-  overflow: hidden;
-  transition: all 0.35s ease;
-}
-
-.service-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.1);
-  border-color: #c7d2fe;
-}
-
-.service-card:hover .card-accent {
-  transform: scaleX(1);
-}
-
-.service-icon {
-  width: 50px;
-  height: 50px;
-  background: #6366f1;
+.card {
+  background: #fff;
+  border: 1px solid #f1f5f9;
   border-radius: 12px;
+  padding: 1.75rem;
+  transition: all 0.25s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
+  border-color: #e2e8f0;
+}
+
+.card-icon {
+  width: 44px;
+  height: 44px;
+  background: rgba(99, 102, 241, 0.08);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.2rem;
+  margin-bottom: 1rem;
 }
 
-.service-icon i {
-  font-size: 1.3rem;
-  color: #fff;
+.card-icon i {
+  font-size: 1.15rem;
+  color: #6366f1;
 }
 
-.service-card h3 {
-  font-size: 1.1rem;
-  font-weight: 700;
+.card h3 {
+  font-size: 1rem;
+  font-weight: 600;
   color: #1e293b;
-  margin-bottom: 0.6rem;
+  margin-bottom: 0.5rem;
 }
 
-.service-card p {
-  font-size: 0.88rem;
+.card p {
+  font-size: 0.85rem;
   color: #64748b;
-  line-height: 1.65;
+  line-height: 1.6;
   margin: 0;
 }
 
-.card-accent {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: #6366f1;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform 0.35s ease;
-}
-
 @media (max-width: 992px) {
-  .services-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
+  .grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (max-width: 576px) {
-  .services {
-    padding: 4rem 1.5rem;
-  }
-
-  .services-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .section-title {
-    font-size: 2rem;
-  }
+  .services { padding: 4rem 1.5rem; }
+  .grid { grid-template-columns: 1fr; }
+  .section-title { font-size: 1.8rem; }
 }
 </style>
