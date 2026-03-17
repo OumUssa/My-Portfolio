@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <section id="projects" class="projects">
     <div class="container">
       <div class="section-head">
@@ -56,6 +56,7 @@
 <script setup>
 import { ref, computed } from "vue";
 import worksyncImage from "@/assets/Worksync.png";
+import E_examImage from "@/assets/image.png";
 
 const tabs = ["All", "Web App", "Landing Page", "Dashboard"];
 const activeTab = ref("All");
@@ -77,9 +78,9 @@ const projects = [
     tags: ["Vue.js", "CSS3"],
     category: "Landing Page",
     color: "#ec4899",
-    image: "https://via.placeholder.com/400x300?text=Portfolio",
-    liveLink: "https://your-portfolio.com/",
-    githubLink: "https://github.com/yourname/portfolio",
+    image: E_examImage,
+    liveLink: "https://curious-rabanadas-de9ea1.netlify.app/",
+    githubLink: "https://github.com/V-Sopanha/G13-ANT-e-ExamCam",
   },
   {
     title: "Task Management App",
