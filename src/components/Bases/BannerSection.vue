@@ -1,13 +1,31 @@
 ﻿<template>
-  <section id="home" class="hero">
+  <section id="home" class="hero" ref="heroRef" @mousemove="handleMouseMove">
+    <div
+      class="mouse-glow"
+      :style="{ left: mouseX + 'px', top: mouseY + 'px' }"></div>
     <div class="hero-bg">
-      <div ref="animationContainer" class="lottie-bg"></div>
+      <div class="animated-grid"></div>
+
+      <!-- Floating Code Elements -->
+      <div class="floating-symbols">
+        <span class="symbol symbol-1">&lt;/&gt;</span>
+        <span class="symbol symbol-2">{}</span>
+        <span class="symbol symbol-3">#</span>
+        <span class="symbol symbol-4">()</span>
+        <span class="symbol symbol-5">//</span>
+        <span class="symbol symbol-6">[]</span>
+        <span class="symbol symbol-7">=></span>
+        <span class="symbol symbol-8">*</span>
+      </div>
+
       <div class="blob blob-1"></div>
       <div class="blob blob-2"></div>
       <div class="blob blob-3"></div>
-    </div>
+    </div> <!-- for animation background -->
     <div class="hero-inner">
-      <div class="hero-text" :class="{ visible: mounted }">
+     <div class="row">
+      <div class="col-8">
+         <div class="hero-text" :class="{ visible: mounted }">
         <div class="hero-badge">
           <span class="badge-dot"></span>
           Available for work
@@ -40,6 +58,13 @@
           </div>
         </div>
       </div>
+      </div>
+      <div class="col-4 border bg-white rounded-4 p-4 ">
+        <div class="profile">
+          <img src="" alt="">
+        </div>
+      </div>
+     </div>
     </div>
   </section>
 </template>
@@ -48,6 +73,16 @@
 import { ref, onMounted, onUnmounted } from "vue";
 
 const mounted = ref(false);
+const heroRef = ref(null);
+const mouseX = ref(-1000);
+const mouseY = ref(-1000);
+
+const handleMouseMove = (e) => {
+  if (!heroRef.value) return;
+  const rect = heroRef.value.getBoundingClientRect();
+  mouseX.value = e.clientX - rect.left;
+  mouseY.value = e.clientY - rect.top;
+};
 
 const words = [
   "web experiences",
@@ -83,22 +118,10 @@ function typeEffect() {
   }
 }
 
-import lottie from "lottie-web";
-import animationData from "@/assets/animation.json";
-
-const animationContainer = ref(null);
-
 onMounted(() => {
   typeTimer = setTimeout(typeEffect, 600);
   requestAnimationFrame(() => {
     mounted.value = true;
-  });
-  lottie.loadAnimation({
-    container: animationContainer.value,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
   });
 });
 onUnmounted(() => clearTimeout(typeTimer));
@@ -133,6 +156,110 @@ const techStack = [
   overflow: hidden;
 }
 
+/* ── Mouse Spotlight Glow ── */
+.mouse-glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(
+    circle closest-side,
+    rgba(99, 102, 241, 0.12),
+    transparent 100%
+  );
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  transition: opacity 0.3s ease;
+}
+
+/* ── Floating Code Symbols ── */
+.floating-symbols {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.symbol {
+  position: absolute;
+  font-family: monospace;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: rgba(99, 102, 241, 0.15);
+  animation: floatSymbol 15s linear infinite;
+}
+
+.symbol-1 {
+  top: 20%;
+  left: 15%;
+  animation-duration: 25s;
+}
+
+.symbol-2 {
+  top: 60%;
+  right: 15%;
+  font-size: 2rem;
+  animation-duration: 20s;
+  animation-direction: reverse;
+}
+
+.symbol-3 {
+  top: 15%;
+  right: 25%;
+  font-size: 1.8rem;
+  animation-duration: 22s;
+}
+
+.symbol-4 {
+  top: 75%;
+  left: 20%;
+  font-size: 1.2rem;
+  animation-duration: 18s;
+}
+
+.symbol-5 {
+  top: 45%;
+  left: 40%;
+  font-size: 1.4rem;
+  animation-duration: 30s;
+  animation-direction: reverse;
+}
+
+.symbol-6 {
+  top: 80%;
+  right: 30%;
+  font-size: 1.6rem;
+  animation-duration: 24s;
+}
+
+.symbol-7 {
+  top: 30%;
+  left: 5%;
+  font-size: 1.7rem;
+  animation-duration: 28s;
+  animation-direction: reverse;
+}
+
+.symbol-8 {
+  top: 5%;
+  left: 50%;
+  font-size: 1.3rem;
+  animation-duration: 19s;
+}
+
+@keyframes floatSymbol {
+  0% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-80px) rotate(180deg);
+  }
+  100% {
+    transform: translateY(0) rotate(360deg);
+  }
+}
+
 /* ── Animated Blobs ── */
 .hero-bg {
   position: absolute;
@@ -142,17 +269,27 @@ const techStack = [
   opacity: 1;
 }
 
-.lottie-bg {
+.animated-grid {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+  inset: -100%;
+  width: 300%;
+  height: 300%;
+  background-size: 40px 40px;
+  background-image:
+    linear-gradient(to right, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(99, 102, 241, 0.05) 1px, transparent 1px);
+  animation: grid-move 20s linear infinite;
+  mask-image: radial-gradient(circle at center, black, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at center, black, transparent 80%);
 }
 
-.lottie-bg :deep(svg) {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover;
+@keyframes grid-move {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-40px, -40px);
+  }
 }
 
 .blob {
@@ -217,7 +354,6 @@ const techStack = [
   margin: 0 auto;
   width: 100%;
   display: grid;
-  grid-template-columns: 1fr 1fr;
   gap: 4rem;
   align-items: center;
   position: relative;
@@ -553,9 +689,6 @@ const techStack = [
   margin-top: 3px;
   font-weight: 600;
 }
-
-
-
 
 .mouse {
   width: 22px;

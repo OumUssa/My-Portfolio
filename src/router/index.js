@@ -2,6 +2,7 @@ import App from "@/App.vue";
 import AboutMe from "@/components/pages/AboutMe.vue";
 import Home from "@/components/pages/Home.vue";
 import { createRouter, createWebHistory } from "vue-router";
+import detail from "@/components/pages/detail.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,6 +22,12 @@ const router = createRouter({
           component: AboutMe,
           name: "About-Me",
         },
+        {
+          path:"/detail/:id",
+          component: detail,
+          name:"detail",
+          props:true
+        }
       ],
     },
   ],

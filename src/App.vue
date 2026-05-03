@@ -5,11 +5,14 @@ import Header from "@/components/layouts/Header.vue";
 <template>
   <div id="app">
     <Header />
-    <router-view></router-view>
+    <main class="main-content">
+      <router-view></router-view>
+    </main>
   </div>
 </template>
 
 <style>
+
 *,
 *::before,
 *::after {
@@ -24,7 +27,15 @@ html {
 }
 
 body {
-  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
   color: #1e293b;
   background: #fff;
   line-height: 1.6;

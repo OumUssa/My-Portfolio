@@ -28,20 +28,30 @@
               :style="{
                 backgroundImage: project.image
                   ? 'url(' + project.image + ')'
-                  : 'linear-gradient(135deg, ' + project.color + ', ' + project.color + ')',
+                  : 'linear-gradient(135deg, ' +
+                    project.color +
+                    ', ' +
+                    project.color +
+                    ')',
               }">
               <div class="card-overlay">
-                <a :href="project.liveLink" target="_blank" rel="noopener noreferrer" class="card-action">
+                <router-link :to="`/detail/${project.id}`" class="card-action">
                   <i class="bi bi-eye"></i>
-                </a>
-                <a :href="project.githubLink" target="_blank" rel="noopener noreferrer" class="card-action">
+                </router-link>
+                <a
+                  :href="project.githubLink"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="card-action">
                   <i class="bi bi-github"></i>
                 </a>
               </div>
             </div>
             <div class="card-body">
               <div class="card-tags">
-                <span v-for="tag in project.tags" :key="tag" class="tag">{{ tag }}</span>
+                <span v-for="tag in project.tags" :key="tag" class="tag">{{
+                  tag
+                }}</span>
               </div>
               <h3 class="card-title">{{ project.title }}</h3>
               <p class="card-desc">{{ project.desc }}</p>
@@ -55,74 +65,13 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import worksyncImage from "@/assets/Worksync.png";
-import E_examImage from "@/assets/image.png";
+import { RouterLink } from "vue-router";
+import projects from "@/data/projects.js";
 
 const tabs = ["All", "Web App", "Landing Page", "Dashboard"];
 const activeTab = ref("All");
 
-const projects = [
-  {
-    title: "WorkSync",
-    desc: "A freelance marketplace for seamless collaboration between clients and freelancers.",
-    tags: ["Vue.js", "HTML5", "CSS3", "API", "JavaScript"],
-    category: "Web App",
-    color: "#6366f1",
-    image: worksyncImage,
-    liveLink: "https://worksync-eta.vercel.app/",
-    githubLink: "https://github.com/horsenghab/freelancer-ant-g2",
-  },
-  {
-    title: "Portfolio Website",
-    desc: "A clean, responsive personal portfolio with smooth animations.",
-    tags: ["Vue.js", "CSS3"],
-    category: "Landing Page",
-    color: "#ec4899",
-    image: E_examImage,
-    liveLink: "https://curious-rabanadas-de9ea1.netlify.app/",
-    githubLink: "https://github.com/V-Sopanha/G13-ANT-e-ExamCam",
-  },
-  {
-    title: "Task Management App",
-    desc: "A productivity tool with drag-and-drop, real-time updates, and team collaboration.",
-    tags: ["Vue.js", "Firebase"],
-    category: "Web App",
-    color: "#0ea5e9",
-    image: "https://via.placeholder.com/400x300?text=Task+App",
-    liveLink: "https://task-management-app.com/",
-    githubLink: "https://github.com/yourname/task-app",
-  },
-  {
-    title: "Analytics Dashboard",
-    desc: "A data visualization dashboard with charts, filters, and export features.",
-    tags: ["Vue.js", "Chart.js"],
-    category: "Dashboard",
-    color: "#10b981",
-    image: "https://via.placeholder.com/400x300?text=Analytics",
-    liveLink: "https://analytics-dashboard.com/",
-    githubLink: "https://github.com/yourname/analytics-dashboard",
-  },
-  {
-    title: "Restaurant Landing Page",
-    desc: "A beautiful restaurant site with menu, reservations, and gallery.",
-    tags: ["HTML", "CSS", "JavaScript"],
-    category: "Landing Page",
-    color: "#f43f5e",
-    image: "https://via.placeholder.com/400x300?text=Restaurant",
-    liveLink: "https://restaurant-landing.com/",
-    githubLink: "https://github.com/yourname/restaurant-site",
-  },
-  {
-    title: "Admin Panel",
-    desc: "A feature-rich admin dashboard with user management and analytics.",
-    tags: ["Vue.js", "Tailwind"],
-    category: "Dashboard",
-    color: "#a78bfa",
-    image: "https://via.placeholder.com/400x300?text=Admin+Panel",
-    liveLink: "https://admin-panel-demo.com/",
-    githubLink: "https://github.com/yourname/admin-panel",
-  },
-];
+const props = defineProps({});
 
 const filteredProjects = computed(() => {
   if (activeTab.value === "All") return projects;
@@ -291,18 +240,44 @@ const filteredProjects = computed(() => {
   margin: 0;
 }
 
-.fade-enter-active { transition: all 0.3s ease; }
-.fade-leave-active { transition: all 0.2s ease; position: absolute; }
-.fade-enter-from { opacity: 0; transform: translateY(12px); }
-.fade-leave-to { opacity: 0; }
+/* Limit description to 3 lines with an ellipsis */
+.card-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fade-enter-active {
+  transition: all 0.3s ease;
+}
+.fade-leave-active {
+  transition: all 0.2s ease;
+  position: absolute;
+}
+.fade-enter-from {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.fade-leave-to {
+  opacity: 0;
+}
 
 @media (max-width: 992px) {
-  .grid { grid-template-columns: repeat(2, 1fr); }
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 576px) {
-  .projects { padding: 4rem 1.5rem; }
-  .grid { grid-template-columns: 1fr; }
-  .section-title { font-size: 1.8rem; }
+  .projects {
+    padding: 4rem 1.5rem;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+  .section-title {
+    font-size: 1.8rem;
+  }
 }
 </style>
