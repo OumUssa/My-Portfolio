@@ -6,7 +6,12 @@
         <h2 class="section-title">Recent Projects</h2>
       </div>
 
-      <div class="filter-bar">
+      <div v-if="loading" class="state-copy">Loading projects...</div>
+      <div v-else-if="error" class="state-copy state-error">
+        {{ error }}
+      </div>
+
+      <div v-else class="filter-bar">
         <button
           v-for="tab in tabs"
           :key="tab"
@@ -18,10 +23,12 @@
       </div>
 
       <div class="grid">
-        <transition-group name="fade">
+        <transition-group
+          v-if="!loading && !error && filteredProjects.length"
+          name="fade">
           <div
             v-for="project in filteredProjects"
-            :key="project.title"
+            :key="project.id"
             class="card">
             <div
               class="card-thumb"
@@ -58,25 +65,61 @@
             </div>
           </div>
         </transition-group>
+
+        <div v-else-if="!loading && !error" class="state-copy state-empty">
+          No projects found.
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
-import { RouterLink } from "vue-router";
-import projects from "@/data/projects.js";
+import { computed, onMounted, ref } from "vue";
+import { fetchProjects } from "@/data/projectsApi.js";
 
-const tabs = ["All", "Web App", "Landing Page", "Dashboard"];
+const projects = ref([]);
+const loading = ref(true);
+const error = ref("");
 const activeTab = ref("All");
 
-const props = defineProps({});
+const tabs = computed(() => {
+  const categories = new Set();
+
+  projects.value.forEach((project) => {
+    project.categories.forEach((category) => categories.add(category));
+  });
+
+  return ["All", ...categories];
+});
 
 const filteredProjects = computed(() => {
-  if (activeTab.value === "All") return projects;
-  return projects.filter((p) => p.category === activeTab.value);
+  if (activeTab.value === "All") {
+    return projects.value;
+  }
+
+  return projects.value.filter((project) =>
+    project.categories.includes(activeTab.value),
+  );
 });
+
+async function loadProjects() {
+  loading.value = true;
+  error.value = "";
+
+  try {
+    projects.value = await fetchProjects();
+  } catch (fetchError) {
+    error.value =
+      fetchError instanceof Error
+        ? fetchError.message
+        : "Failed to load projects.";
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(loadProjects);
 </script>
 
 <style scoped>
@@ -116,6 +159,21 @@ const filteredProjects = computed(() => {
   gap: 0.4rem;
   margin-bottom: 2.5rem;
   flex-wrap: wrap;
+}
+
+.state-copy {
+  text-align: center;
+  color: #64748b;
+  margin-bottom: 2rem;
+}
+
+.state-error {
+  color: #b91c1c;
+}
+
+.state-empty {
+  grid-column: 1 / -1;
+  padding: 2rem 1rem;
 }
 
 .filter-btn {
