@@ -198,17 +198,5 @@ watch(
   width: 100%;
   border-radius: 0.5rem;
 }
-
-.project-image {
-  width: 100%;
-  max-height: 415px;
-  object-fit: cover;
-  border-radius: 0.5rem;
-}
-
-.link-stack {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
 </style>
+
