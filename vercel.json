@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:match*",
+      "destination": "http://portfolio.cms-jubpet.linkpc.net/api/:match*"
+    },
+    {
+      "source": "/uploads/:match*",
+      "destination": "http://portfolio.cms-jubpet.linkpc.net/uploads/:match*"
+    }
+  ]
+}
