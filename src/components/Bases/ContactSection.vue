@@ -41,7 +41,6 @@
           <div class="social-row">
             <a href="#" aria-label="GitHub"><i class="bi bi-github"></i></a>
             <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-            <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
             <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
           </div>
         </div>

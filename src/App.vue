@@ -1,10 +1,12 @@
 <script setup>
 import Header from "@/components/layouts/Header.vue";
+import { useRoute } from "vue-router";
+const route = useRoute();
 </script>
 
 <template>
   <div id="app">
-    <Header />
+    <Header v-if="route.name !== 'Admin' && route.name !== 'Login'" />
     <main class="main-content">
       <router-view></router-view>
     </main>

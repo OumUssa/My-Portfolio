@@ -24,16 +24,12 @@
         </div>
         <div class="profile-info">
           <h2>Hi, I'm <span class="accent">Oum Ussa</span></h2>
-          <p class="role">Full-Stack Developer</p>
+          <p class="role">Back-End Developer</p>
           <p class="bio">
-            I'm a passionate full-stack developer with a love for creating
-            beautiful, functional, and user-friendly websites. I specialize in
-            building modern web applications with the latest technologies.
+            I am a driven IT Engineering student, an MPTC Scholarship recipient at ANT, and a web developer with a strong focus on building secure, scalable backend architectures. I approach software engineering with careful reasoning, believing that the best digital solutions come from deeply understanding the 'why' behind a problem before writing code.
           </p>
           <p class="bio">
-            With a strong foundation in both front-end and back-end development,
-            I bring ideas to life through clean code and thoughtful design
-            decisions.
+            While I specialize in robust server-side logic and database design, I care deeply about the final user experience. I thrive in collaborative team environments, bringing strong situational awareness and clear communication to deliver highly refined, clean digital environments.
           </p>
           <div class="info-grid">
             <div
@@ -117,7 +113,7 @@ const skills = [
     color: "#61dafb",
   },
   { name: "Node.js", icon: "bi bi-hdd-stack", level: "75%", color: "#5fa04e" },
-  { name: "Express.js", icon: "bi bi-server", level: "70%", color: "#333333" },
+  { name: "Express.js", icon: "bi bi-server", level: "90%", color: "#333333" },
   { name: "PHP", icon: "bi bi-filetype-php", level: "55%", color: "#777bb4" },
   { name: "Laravel", icon: "bi bi-box", level: "50%", color: "#ff2d20" },
   { name: "MySQL", icon: "bi bi-database", level: "65%", color: "#4479a1" },

@@ -18,18 +18,14 @@ export const useAuthStore = defineStore("Auth", () => {
 
   const setUser = (newUser) => {
     user.value = newUser;
-    if (newUser) {
-      localStorage.setItem("user", JSON.stringify(newUser));
-    } else {
-      localStorage.removeItem("user");
-    }
   };
 
   const login = async ({ username, password } = {}) => {
     try {
       const body = { username, name: username, password };
 
-      const res = await fetch("/api/auth/login", {
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://portfolio.cms-jubpet.linkpc.net";
+      const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -42,9 +38,7 @@ export const useAuthStore = defineStore("Auth", () => {
 
       if (!res.ok) {
         throw new Error(
-          data.message ||
-            data.error ||
-            `Login failed (${res.status})`,
+          data.message || data.error || `Login failed (${res.status})`,
         );
       }
 
@@ -55,8 +49,6 @@ export const useAuthStore = defineStore("Auth", () => {
       const nextUser = data.data || data.user || null;
       setUser(nextUser);
 
-      localStorage.setItem("auth", data.token ? "true" : "false");
-
       return data;
     } catch (err) {
       throw err;
@@ -66,7 +58,6 @@ export const useAuthStore = defineStore("Auth", () => {
     try {
       setToken(null);
       setUser(null);
-      localStorage.removeItem("auth");
       return { result: true };
     } catch (err) {
       throw err.message;

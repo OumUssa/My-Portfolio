@@ -61,7 +61,7 @@
       </div>
       <div class="col-4 border bg-white rounded-4 p-4 ">
         <div class="profile">
-          <img src="" alt="">
+          <img src="../../assets//Hero_image.png" alt="">
         </div>
       </div>
      </div>

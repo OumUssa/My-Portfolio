@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <section id="projects" class="projects">
     <div class="container">
       <div class="section-head">
@@ -34,12 +34,8 @@
               class="card-thumb"
               :style="{
                 backgroundImage: project.image
-                  ? 'url(' + project.image + ')'
-                  : 'linear-gradient(135deg, ' +
-                    project.color +
-                    ', ' +
-                    project.color +
-                    ')',
+                  ? `url('${project.image}')`
+                  : `linear-gradient(135deg, ${project.color || '#e2e8f0'}, ${project.color || '#cbd5e1'})`,
               }">
               <div class="card-overlay">
                 <router-link :to="`/detail/${project.id}`" class="card-action">
