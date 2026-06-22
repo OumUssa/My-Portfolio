@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://portfolio.cms-jubpet.linkpc.net";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://portfolio.cms-jubpet.linkpc.net";
 
 export async function fetchCategories() {
   const response = await fetch(`${API_BASE_URL}/api/auth/categories`);

@@ -10,11 +10,11 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://portfolio.cms-jubpet.linkpc.net",
+        target: "https://portfolio.cms-jubpet.linkpc.net",
         changeOrigin: true,
       },
       "/uploads": {
-        target: "http://portfolio.cms-jubpet.linkpc.net",
+        target: "https://portfolio.cms-jubpet.linkpc.net",
         changeOrigin: true,
       },
     },
