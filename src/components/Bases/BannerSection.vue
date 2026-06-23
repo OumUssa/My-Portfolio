@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <section id="home" class="hero" ref="heroRef" @mousemove="handleMouseMove">
     <div
       class="mouse-glow"
@@ -23,8 +23,8 @@
       <div class="blob blob-3"></div>
     </div> <!-- for animation background -->
     <div class="hero-inner">
-     <div class="row">
-      <div class="col-8">
+     <div class="row align-items-center">
+      <div class="col-12 col-lg-8 order-2 order-lg-1 mt-4 mt-lg-0">
          <div class="hero-text" :class="{ visible: mounted }">
         <div class="hero-badge">
           <span class="badge-dot"></span>
@@ -59,9 +59,11 @@
         </div>
       </div>
       </div>
-      <div class="col-4 border bg-white rounded-4 p-4 ">
-        <div class="profile">
-          <img src="../../assets//Hero_image.png" alt="">
+      <div class="col-12 col-lg-4 order-1 order-lg-2 mb-4 mb-lg-0">
+        <div class="border bg-white rounded-4 p-4">
+          <div class="profile text-center">
+            <img src="../../assets//Hero_image.png" alt="Profile" class="img-fluid rounded">
+          </div>
         </div>
       </div>
      </div>

@@ -586,57 +586,7 @@ const education = [
   transition: width 0.6s ease;
 }
 
-/* ── Responsive ── */
-@media (max-width: 900px) {
-  .about-hero {
-    padding: 7rem 1.5rem 6rem;
-  }
-  .about-heading {
-    font-size: 2.4rem;
-  }
-  .profile-card {
-    grid-template-columns: 1fr;
-    text-align: center;
-  }
-  .info-grid {
-    grid-template-columns: 1fr;
-  }
-  .info-item {
-    justify-content: center;
-  }
-}
 
-@media (max-width: 576px) {
-  .about-hero {
-    padding: 6rem 1.5rem 5rem;
-  }
-  .about-heading {
-    font-size: 2rem;
-  }
-  .profile-card {
-    padding: 2rem 1.5rem;
-  }
-  .profile-img {
-    width: 180px;
-    height: 180px;
-  }
-  .profile-info h2 {
-    font-size: 1.35rem;
-  }
-  .skills-grid {
-    grid-template-columns: 1fr;
-  }
-  .skills {
-    padding: 3rem 1.5rem 4rem;
-  }
-  .section-title {
-    font-size: 1.6rem;
-  }
-  .timeline-grid {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-}
 
 /* ── Download CV Button (Simple) ── */
 .cv-btn-simple {
@@ -741,5 +691,67 @@ const education = [
   color: #64748b;
   line-height: 1.6;
   margin: 0;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .about-hero {
+    padding: 7rem 1.5rem 6rem;
+  }
+  .about-heading {
+    font-size: 2.4rem;
+  }
+  .profile {
+    padding: 0 1.5rem 4rem;
+  }
+  .profile-card {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding: 2rem;
+  }
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+  .info-item {
+    justify-content: center;
+  }
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+  .timeline-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .about-hero {
+    padding: 5rem 1rem 4rem;
+  }
+  .about-heading {
+    font-size: 2rem;
+  }
+  .profile {
+    padding: 0 1rem 3rem;
+  }
+  .profile-card {
+    padding: 1.5rem 1rem;
+  }
+  .profile-img {
+    width: 150px;
+    height: 150px;
+  }
+  .profile-info h2 {
+    font-size: 1.35rem;
+  }
+  .skills {
+    padding: 3rem 1rem 4rem;
+  }
+  .section-title {
+    font-size: 1.6rem;
+  }
+  .timeline-section {
+    padding: 3rem 1rem;
+  }
 }
 </style>

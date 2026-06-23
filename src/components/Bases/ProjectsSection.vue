@@ -58,6 +58,11 @@
               </div>
               <h3 class="card-title">{{ project.title }}</h3>
               <p class="card-desc">{{ project.desc }}</p>
+              <div class="card-footer-action">
+                <router-link :to="`/detail/${project.id}`" class="card-btn">
+                  View Project <i class="bi bi-arrow-right"></i>
+                </router-link>
+              </div>
             </div>
           </div>
         </transition-group>
@@ -207,6 +212,9 @@ onMounted(loadProjects);
   overflow: hidden;
   background: #fff;
   transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card:hover {
@@ -260,6 +268,9 @@ onMounted(loadProjects);
 
 .card-body {
   padding: 1.15rem 1.25rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
 }
 
 .card-tags {
@@ -292,6 +303,31 @@ onMounted(loadProjects);
   color: #64748b;
   line-height: 1.5;
   margin: 0;
+}
+
+.card-footer-action {
+  margin-top: auto;
+  padding-top: 1.25rem;
+}
+
+.card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1rem;
+  background: rgba(99, 102, 241, 0.08);
+  color: #6366f1;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.card-btn:hover {
+  background: rgba(99, 102, 241, 0.15);
+  transform: translateY(-1px);
 }
 
 /* Limit description to 3 lines with an ellipsis */
