@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <nav class="navbar" :class="{ scrolled: isScrolled }">
     <div class="navbar-inner w-100">
       <a href="/" class="logo " @click.prevent="onNavClick('home')">
@@ -16,15 +16,20 @@
           </a>
         </li>
       </ul>
-      <button
-        class="menu-toggle"
-        :class="{ open: menuOpen }"
-        @click="menuOpen = !menuOpen"
-        aria-label="Toggle menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
+      <div class="d-flex align-items-center gap-3">
+        <button class="btn btn-link nav-link p-0 border-0 fs-5" @click="themeStore.toggleTheme()" aria-label="Toggle theme">
+          <i :class="themeStore.isDark ? 'bi bi-sun-fill' : 'bi bi-moon-fill'"></i>
+        </button>
+        <button
+          class="menu-toggle"
+          :class="{ open: menuOpen }"
+          @click="menuOpen = !menuOpen"
+          aria-label="Toggle menu">
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+      </div>
     </div>
   </nav>
 </template>
@@ -32,9 +37,11 @@
 <script setup>
 import { ref, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import { useThemeStore } from "@/stores/theme";
 
 const router = useRouter();
 const route = useRoute();
+const themeStore = useThemeStore();
 
 const navLinks = [
   { id: "home", label: "Home" },
@@ -302,6 +309,38 @@ onUnmounted(() => {
   .nav-link.active {
     color: #6366f1;
     background: rgba(99, 102, 241, 0.06);
+  }
+}
+
+:global([data-bs-theme="dark"]) .navbar {
+  background: rgba(15, 23, 42, 0.8);
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+:global([data-bs-theme="dark"]) .navbar.scrolled {
+  background: rgba(15, 23, 42, 0.95);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+:global([data-bs-theme="dark"]) .logo {
+  color: #f8fafc;
+}
+:global([data-bs-theme="dark"]) .nav-link {
+  color: #94a3b8;
+}
+:global([data-bs-theme="dark"]) .nav-link:hover {
+  color: #f8fafc;
+  background: rgba(99, 102, 241, 0.15);
+}
+:global([data-bs-theme="dark"]) .nav-link.active {
+  background: rgba(99, 102, 241, 0.2);
+}
+:global([data-bs-theme="dark"]) .menu-toggle span {
+  background: #f8fafc;
+}
+@media (max-width: 768px) {
+  :global([data-bs-theme="dark"]) .nav-links {
+    background: #0f172a;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
   }
 }
 </style>

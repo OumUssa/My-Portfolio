@@ -34,6 +34,13 @@
           <p class="bio">
             While I specialize in robust server-side logic and database design, I care deeply about the final user experience. I thrive in collaborative team environments, bringing strong situational awareness and clear communication to deliver highly refined, clean digital environments.
           </p>
+          
+          <div class="cv-action mt-2 mb-4">
+            <a :href="cvFile" download="CV_OumUssa.pdf" class="cv-btn-simple">
+              <i class="bi bi-file-earmark-arrow-down"></i> Download Resume
+            </a>
+          </div>
+
           <div class="info-grid">
             <div
               class="info-item"
@@ -45,6 +52,42 @@
               <div>
                 <span class="info-label">{{ info.label }}</span>
                 <span class="info-val">{{ info.value }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="timeline-section">
+    <div class="container">
+      <div class="section-head">
+        <span class="section-tag">My Journey</span>
+        <h2 class="section-title">Experience & Education</h2>
+      </div>
+      <div class="timeline-grid">
+        <div class="timeline-col">
+          <h3 class="timeline-title"><i class="bi bi-briefcase"></i> Experience</h3>
+          <div class="timeline-wrap">
+            <div class="timeline-item" v-for="exp in experience" :key="exp.title">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <h4>{{ exp.title }}</h4>
+                <p class="timeline-desc">{{ exp.desc }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="timeline-col">
+          <h3 class="timeline-title"><i class="bi bi-mortarboard"></i> Education</h3>
+          <div class="timeline-wrap">
+            <div class="timeline-item" v-for="edu in education" :key="edu.title">
+              <div class="timeline-dot"></div>
+              <div class="timeline-content">
+                <h4>{{ edu.title }}</h4>
+                <span class="timeline-date">{{ edu.date }}</span>
+                <p class="timeline-desc">{{ edu.desc }}</p>
               </div>
             </div>
           </div>
@@ -88,6 +131,7 @@
 import { ref, onMounted } from "vue";
 import lottie from "lottie-web";
 import mentalTherapyAnimation from "../../assets/mental-therapy.json";
+import cvFile from "../../assets/CV_OumUssa.pdf";
 
 const lottieContainer = ref(null);
 
@@ -154,7 +198,46 @@ const skills = [
     level: "70%",
     color: "#06b6d4",
   },
-  { name: "Git", icon: "bi bi-git", level: "85%", color: "#f05032" },
+  { name: "Git & GitHub", icon: "bi bi-github", level: "85%", color: "#f05032" },
+  { name: "Contabo / VPS", icon: "bi bi-hdd-network", level: "70%", color: "#003b5c" },
+  { name: "aaPanel", icon: "bi bi-server", level: "75%", color: "#20a53a" },
+  { name: "Postman", icon: "bi bi-send", level: "80%", color: "#ff6c37" }
+];
+
+const experience = [
+  {
+    title: "Clinic & Pet Management System",
+    desc: "Developed a full-stack platform featuring an automated appointment booking system with Node.js/Express.js/Laravel and MySQL."
+  },
+  {
+    title: "WorkSync with Dashboard",
+    desc: "Engineered a secure web application focused on workflow management and efficient RESTful API integration."
+  },
+  {
+    title: "Personal Portfolio Dashboard",
+    desc: "Designed and developed a minimalist, high-end developer portfolio and dashboard using Vue.js / Node.js / Express.js and modern responsive UI architectures."
+  },
+  {
+    title: "e-examCam",
+    desc: "Designed clean, responsive, and intuitive web interfaces using HTML/CSS/Bootstrap and JavaScript."
+  },
+  {
+    title: "Deployment & Tools",
+    desc: "Hosted and deployed projects on Linux VPS (Contabo) using aaPanel; utilized Git/GitHub for strict version control."
+  }
+];
+
+const education = [
+  {
+    title: "Royal University of Phnom Penh (RUPP)",
+    date: "2023 - Present",
+    desc: "Bachelor of Information Technology Engineering (ITE)"
+  },
+  {
+    title: "ANT Training",
+    date: "Scholarship",
+    desc: "MPTC Full Stack Development Scholarship recipient."
+  }
 ];
 </script>
 
@@ -549,5 +632,114 @@ const skills = [
   .section-title {
     font-size: 1.6rem;
   }
+  .timeline-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* ── Download CV Button (Simple) ── */
+.cv-btn-simple {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(99, 102, 241, 0.08);
+  color: #6366f1;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: 1px solid rgba(99, 102, 241, 0.15);
+}
+
+.cv-btn-simple:hover {
+  background: rgba(99, 102, 241, 0.15);
+  transform: translateY(-1px);
+}
+
+/* ── Timeline Section ── */
+.timeline-section {
+  padding: 5rem 2rem;
+  background: #f8fafc;
+}
+
+.timeline-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+}
+
+.timeline-col {
+  background: #fff;
+  padding: 2.5rem;
+  border-radius: 16px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 4px 24px rgba(99, 102, 241, 0.04);
+}
+
+.timeline-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.timeline-title i {
+  color: #6366f1;
+}
+
+.timeline-wrap {
+  border-left: 2px solid #e2e8f0;
+  padding-left: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.timeline-item {
+  position: relative;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: calc(-2rem - 8px);
+  top: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #6366f1;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+.timeline-content h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.3rem;
+  line-height: 1.4;
+}
+
+.timeline-date {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.1);
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+
+.timeline-desc {
+  font-size: 0.85rem;
+  color: #64748b;
+  line-height: 1.6;
+  margin: 0;
 }
 </style>
