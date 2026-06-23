@@ -1,116 +1,124 @@
 <template>
   <section class="detail-section">
-    <div class="container">
-      <div class="row">
-        <div class="col-6">
-          <div class="media-frame rounded pt-4">
+    <div class="container detail-container">
+      <div v-if="loading" class="state-container">
+        <div class="spinner"></div>
+        <p>Loading project data...</p>
+      </div>
+      <div v-else-if="error" class="state-container error">
+        <i class="bi bi-exclamation-circle" style="font-size: 2rem; margin-bottom: 8px;"></i>
+        <p>{{ error }}</p>
+      </div>
+      <div v-else-if="project" class="detail-grid">
+        <!-- Left Column: Visuals & Info -->
+        <div class="main-content">
+          <div class="media-frame">
             <iframe
               v-if="youtubeEmbedUrl"
               width="100%"
-              height="415"
+              height="100%"
               :src="youtubeEmbedUrl"
               title="YouTube video player"
               frameborder="0"
-              allow="
-                accelerometer;
-                autoplay;
-                clipboard-write;
-                encrypted-media;
-                gyroscope;
-                picture-in-picture;
-                web-share;
-              "
-              referrerpolicy="strict-origin-when-cross-origin"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
               allowfullscreen
               class="project-video"></iframe>
             <img
-              v-else-if="project?.image"
+              v-else-if="project.image"
               :src="project.image"
               :alt="project.title"
               class="project-image" />
             <div v-else class="no-video">
-              No preview available for this project.
+              <i class="bi bi-image text-muted" style="font-size: 2rem;"></i>
+              <p>No preview available for this project.</p>
             </div>
           </div>
-          <div class="card-body">
-            <div class="title">
-              <h3 class="card-title py-3">
-                {{
-                  project ? project.title : loading ? "Loading..." : "Project"
-                }}
-              </h3>
-              <p class="card-desc">{{ project ? project.desc : "" }}</p>
-            </div>
+          
+          <div class="project-info">
+            <h1 class="project-title">{{ project.title }}</h1>
+            <p class="project-desc">{{ project.desc }}</p>
           </div>
         </div>
-        <div class="col-6">
-          <div class="content border bg-white mt-4 py-3 rounded p-4">
-            <h4 class="content-title text-center mb-3">
-              A quick note on live demos:
-            </h4>
-            <p v-if="loading" class="card-text">Loading project data...</p>
-            <p v-else-if="error" class="card-text text-danger">{{ error }}</p>
-            <p class="card-text">
-              To manage cloud hosting costs, some of my live project servers may
-              be inactive. For any project that is currently offline, I have
-              provided a complete YouTube video demonstration and the GitHub
-              repository so you can still review the UI, features, and code.
-            </p>
-            <div v-if="project" class="project-meta mt-3">
-              <p><strong>Admin:</strong> {{ project.adminName }}</p>
-              <p><strong>Categories:</strong> {{ project.tags.join(", ") }}</p>
-              <p><strong>Created:</strong> {{ project.createdAt }}</p>
+
+        <!-- Right Column: Meta & Links -->
+        <div class="sidebar-content">
+          <div class="meta-card">
+            <h4 class="card-title">Project Details</h4>
+            
+            <div class="meta-item">
+              <span class="meta-label">Admin</span>
+              <span class="meta-value" style="display: flex; align-items: center; gap: 8px;">
+                <div class="admin-avatar">
+                  {{ project.adminName ? project.adminName.charAt(0).toUpperCase() : 'U' }}
+                </div>
+                {{ project.adminName || 'Unknown' }}
+              </span>
             </div>
-            <span class="fw-bold d-block mt-3">
-              Thank you for your interest in my portfolio and for taking the
-              time to review my work!
-            </span>
+            
+            <div class="meta-item">
+              <span class="meta-label">Created</span>
+              <span class="meta-value">{{ formattedDate }}</span>
+            </div>
+            
+            <div class="meta-item">
+              <span class="meta-label">Categories</span>
+              <div class="tags-container">
+                <span v-for="(tag, index) in project.tags" :key="index" class="custom-tag">
+                  {{ tag.trim() }}
+                </span>
+              </div>
+            </div>
           </div>
-          <div
-            class="description-project border bg-white mt-4 py-3 rounded p-4">
-            <h4 class="content-title">Links</h4>
-            <div
-              v-if="project"
-              class="link-stack d-flex flex-column gap-3 mt-3">
+
+          <div class="meta-card">
+            <h4 class="card-title">Project Links</h4>
+            <div class="links-grid">
               <a
                 v-if="project.openProject"
                 :href="project.openProject"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="d-flex align-items-center gap-2 text-decoration-none">
-                <i class="bi bi-box-arrow-up-right text-primary"></i> Open
-                project
+                class="project-link primary-link">
+                <i class="bi bi-box-arrow-up-right"></i> Open Project
               </a>
               <a
                 v-if="project.liveLink"
                 :href="project.liveLink"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="d-flex align-items-center gap-2 text-decoration-none">
-                <i
-                  :class="
-                    youtubeEmbedUrl
-                      ? 'bi bi-youtube text-danger'
-                      : 'bi bi-play-circle text-info'
-                  "></i>
-                {{ youtubeEmbedUrl ? "Watch on YouTube" : "Live Preview" }}
+                class="project-link"
+                :class="youtubeEmbedUrl ? 'youtube-link' : 'live-link'">
+                <i :class="youtubeEmbedUrl ? 'bi bi-youtube' : 'bi bi-play-circle'"></i>
+                {{ youtubeEmbedUrl ? "Watch Video" : "Live Preview" }}
               </a>
               <a
                 v-if="project.githubLink"
                 :href="project.githubLink"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="d-flex align-items-center gap-2 text-decoration-none">
-                <i class="bi bi-github text-dark"></i> GitHub
+                class="project-link github-link">
+                <i class="bi bi-github"></i> Source Code
               </a>
             </div>
-            <p v-else class="card-text">No project selected.</p>
+          </div>
+          
+          <div class="note-card">
+            <i class="bi bi-info-circle info-icon"></i>
+            <p>
+              To manage cloud hosting costs, some of my live project servers may
+              be inactive. For any project that is currently offline, I have
+              provided a complete video demonstration and the GitHub repository.
+            </p>
           </div>
         </div>
+      </div>
+      <div v-else class="state-container">
+        <p>No project selected.</p>
       </div>
     </div>
   </section>
 </template>
+
 <script setup>
 import { computed, defineProps, onMounted, ref, watch } from "vue";
 import { fetchProjects } from "@/data/projectsApi.js";
@@ -129,6 +137,21 @@ const error = ref("");
 const project = computed(() =>
   projects.value.find((item) => String(item.id) === String(props.id)),
 );
+
+const formattedDate = computed(() => {
+  if (!project.value || !project.value.createdAt) return "N/A";
+  try {
+    const date = new Date(project.value.createdAt);
+    if (isNaN(date.getTime())) return project.value.createdAt.split('T')[0];
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric"
+    });
+  } catch (e) {
+    return project.value.createdAt.split('T')[0];
+  }
+});
 
 const youtubeEmbedUrl = computed(() => {
   if (!project.value?.liveLink) return null;
@@ -176,27 +199,273 @@ watch(
     if (projects.value.length) {
       return;
     }
-
     loadProjects();
   },
 );
 </script>
 
-<style scope>
+<style scoped>
 .detail-section {
-  margin-top: 65px;
-  background-color: #f8f9fa;
+  padding: 100px 20px 60px;
+  background-color: #f8fafc;
   min-height: 100vh;
 }
 
-.media-frame {
-  min-height: 415px;
-  background: #fff;
+.detail-container {
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-.project-video {
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 32px;
+  align-items: start;
+}
+
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.media-frame {
   width: 100%;
-  border-radius: 0.5rem;
+  aspect-ratio: 16/9;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #e2e8f0;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-video,
+.project-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.no-video {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: #64748b;
+}
+
+.project-info {
+  background: #fff;
+  padding: 32px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  border: 1px solid #f1f5f9;
+}
+
+.project-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: #0f172a;
+  margin: 0 0 16px;
+  letter-spacing: -0.5px;
+}
+
+.project-desc {
+  font-size: 16px;
+  line-height: 1.7;
+  color: #475569;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.sidebar-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.meta-card {
+  background: #fff;
+  padding: 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  border: 1px solid #f1f5f9;
+}
+
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 20px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.meta-item {
+  margin-bottom: 16px;
+}
+.meta-item:last-child {
+  margin-bottom: 0;
+}
+
+.meta-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 6px;
+}
+
+.meta-value {
+  font-size: 15px;
+  font-weight: 500;
+  color: #334155;
+}
+
+.admin-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #eef2ff;
+  color: #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.tags-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.custom-tag {
+  padding: 6px 12px;
+  background: #eef2ff;
+  color: #6366f1;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: 1px solid #e0e7ff;
+}
+
+.links-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.project-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.primary-link {
+  background: #6366f1;
+  color: #fff;
+}
+.primary-link:hover {
+  background: #4f46e5;
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+.youtube-link {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
+}
+.youtube-link:hover {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.live-link {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
+}
+.live-link:hover {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.github-link {
+  background: #f8fafc;
+  color: #0f172a;
+  border: 1px solid #e2e8f0;
+}
+.github-link:hover {
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.note-card {
+  background: #fff8f1;
+  border: 1px solid #ffedd5;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.note-card .info-icon {
+  font-size: 20px;
+  color: #f97316;
+  margin-top: 2px;
+}
+.note-card p {
+  margin: 0;
+  font-size: 14px;
+  color: #9a3412;
+  line-height: 1.6;
+}
+
+.state-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: #64748b;
+  font-size: 16px;
+}
+.state-container.error {
+  color: #ef4444;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #e2e8f0;
+  border-top-color: #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 992px) {
+  .detail-grid {
+    grid-template-columns: 1fr;
+  }
 }
 </style>
 
