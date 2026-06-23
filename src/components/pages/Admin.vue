@@ -6,7 +6,7 @@
           <div class="brand-mark">A</div>
           <router-link to="/" class="brand-name">
             <div>
-              <h1>Admin</h1>
+              <h1>OumUssa</h1>
               <p>Portfolio</p>
             </div>
           </router-link>
@@ -19,6 +19,7 @@
             class="menu-item"
             :class="{ active: activeSection === item.key }"
             @click="activeSection = item.key">
+            <i class="bi" :class="item.icon"></i>
             <span>{{ item.label }}</span>
           </button>
         </nav>
@@ -70,6 +71,17 @@
         @update:categories="categories = $event"
         @update:projects="projects = $event"
       />
+
+      <ContactManagement
+        v-if="activeSection === 'contact'"
+        :token="token"
+      />
+
+      <div v-if="activeSection === 'profile'" class="panel" style="padding: 40px; text-align: center; color: #64748b; background: #fff; border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 4px 12px rgba(0,0,0,0.02);">
+        <i class="bi bi-person-badge" style="font-size: 48px; margin-bottom: 16px; display: block; color: #cbd5e1;"></i>
+        <h3 style="margin: 0 0 8px; color: #1e293b; font-size: 20px;">Admin Profile</h3>
+        <p style="margin: 0;">This feature will be available soon.</p>
+      </div>
     </main>
   </div>
 </template>
@@ -86,15 +98,18 @@ import { buildCategoryList, toAdminProject } from "@/data/adminContent.js";
 import Dashboard from "@/components/pages/Admin/Dashboard.vue";
 import CreateProject from "@/components/pages/Admin/CreateProject.vue";
 import CreateTechStack from "@/components/pages/Admin/CreateTechStack.vue";
+import ContactManagement from "@/components/pages/Admin/ContactManagement.vue";
 
 const router = useRouter();
 const auth = useAuthStore();
 const { user, token } = storeToRefs(auth);
 
 const menuItems = [
-  { key: "dashboard", label: "Dashboard" },
-  { key: "projects", label: "Projects" },
-  { key: "categories", label: "Tech Stacks" },
+  { key: "dashboard", label: "Dashboard", icon: "bi-grid-1x2-fill" },
+  { key: "projects", label: "Projects", icon: "bi-folder-fill" },
+  { key: "categories", label: "Tech Stacks", icon: "bi-layers-fill" },
+  { key: "contact", label: "Contact", icon: "bi-chat-left-dots-fill" },
+  { key: "profile", label: "Profile", icon: "bi-person-circle" },
 ];
 
 const activeSection = ref("dashboard");
@@ -205,19 +220,23 @@ onMounted(loadDashboardData);
 
 .menu-item {
   width: 100%;
-  padding: 10px 14px;
-  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 12px;
   border: 1px solid transparent;
   background: transparent;
   color: #94a3b8;
   text-align: left;
   font-size: 14px;
   font-weight: 600;
-  transition:
-    background 0.2s ease,
-    transform 0.2s ease,
-    color 0.2s ease;
+  transition: all 0.2s ease;
   cursor: pointer;
+}
+
+.menu-item i {
+  font-size: 18px;
 }
 
 .menu-item:hover,
@@ -271,7 +290,7 @@ onMounted(loadDashboardData);
   justify-content: space-between;
   gap: 20px;
   border-radius: 16px;
-  background: #fff;
+  background: #241f59e6;
   border: 1px solid #e2e8f0;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
 }
@@ -281,7 +300,7 @@ onMounted(loadDashboardData);
   text-transform: uppercase;
   letter-spacing: 0.15em;
   font-size: 10px;
-  color: #6366f1;
+  color: #f7f7f8;
   font-weight: 700;
 }
 
@@ -289,7 +308,7 @@ onMounted(loadDashboardData);
   margin: 0;
   font-size: 20px;
   font-weight: 800;
-  color: #1e293b;
+  color: #ffffff;
   letter-spacing: -0.5px;
 }
 
@@ -297,7 +316,7 @@ onMounted(loadDashboardData);
   margin: 6px 0 0;
   max-width: 600px;
   font-size: 14px;
-  color: #64748b;
+  color: #98c3ff;
   line-height: 1.5;
 }
 

@@ -26,22 +26,22 @@
               <i class="bi bi-telephone"></i>
               <div>
                 <span class="info-label">Phone</span>
-                <span class="info-value">+1 234 567 890</span>
+                <span class="info-value">+855 967434131</span>
               </div>
             </a>
             <div class="info-item">
               <i class="bi bi-geo-alt"></i>
               <div>
                 <span class="info-label">Location</span>
-                <span class="info-value">Your City, Country</span>
+                <span class="info-value">Por Sen Chey, Phnom Penh</span>
               </div>
             </div>
           </div>
 
           <div class="social-row">
-            <a href="#" aria-label="GitHub"><i class="bi bi-github"></i></a>
-            <a href="#" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
-            <a href="#" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+            <a href="https://github.com/OumUssa" aria-label="GitHub"><i class="bi bi-github"></i></a>
+            <a href="https://www.linkedin.com/in/oum-ussa-425b2a348/" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+            <a href="https://web.facebook.com/bro.stk.161" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
           </div>
         </div>
 
@@ -84,6 +84,7 @@
 
 <script setup>
 import { ref, reactive } from "vue";
+import { submitContact } from "@/data/contactsApi.js";
 
 const loading = ref(false);
 const statusMsg = ref("");
@@ -107,22 +108,9 @@ const sendEmail = async () => {
   statusMsg.value = "";
 
   try {
-    const response = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        access_key: "YOUR_ACCESS_KEY",
-        name: form.name,
-        email: form.email,
-        subject: form.subject,
-        message: form.message,
-        to: "oumussa719@gmail.com",
-      }),
-    });
+    const data = await submitContact(form);
 
-    const data = await response.json();
-
-    if (data.success) {
+    if (data.result) {
       statusMsg.value = "Message sent successfully! I'll get back to you soon.";
       statusType.value = "success";
       form.name = "";
@@ -132,7 +120,9 @@ const sendEmail = async () => {
     } else {
       throw new Error("Failed");
     }
-  } catch {
+  } catch (err) {
+    console.error("Error sending message:", err);
+    // Fallback to mailto if API fails
     const mailtoLink = `mailto:oumussa719@gmail.com?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`)}`;
     window.open(mailtoLink, "_blank");
     statusMsg.value = "Opening your email client as fallback...";

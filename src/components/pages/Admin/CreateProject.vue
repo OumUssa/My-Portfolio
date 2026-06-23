@@ -22,106 +22,141 @@
         </div>
       </div>
 
-      <div class="list-stack">
-        <button
-          v-for="project in filteredProjects"
-          :key="project.id"
-          class="list-item"
-          :class="{ selected: selectedProject?.id === project.id }"
-          @click="selectProject(project)">
-          <div>
-            <strong>{{ project.title }}</strong>
-            <small>{{ project.category }} • {{ project.tech }}</small>
-          </div>
-          <div class="row-actions">
-            <span class="item-tag">{{ project.status }}</span>
-            <button
-              class="icon-btn"
-              type="button"
-              title="Edit project"
-              @click.stop="editProject(project)">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <button
-              class="icon-btn danger-icon"
-              type="button"
-              title="Delete project"
-              @click.stop="handleDeleteProject(project.id)">
-              <i class="bi bi-trash3"></i>
-            </button>
-          </div>
-        </button>
+      <div class="table-container">
+        <div class="table-header">
+          <div class="th-id">#</div>
+          <div class="th-info">Project Info</div>
+          <div class="th-tech">Tech Stack</div>
+          <div class="th-status">Status</div>
+          <div class="th-actions">Action</div>
+        </div>
+
+        <div class="list-stack">
+          <button
+            v-for="(project, index) in filteredProjects"
+            :key="project.id"
+            class="list-item"
+            :class="{ selected: selectedProject?.id === project.id }"
+            @click="selectProject(project)">
+            
+            <div class="td-id">
+              <span class="index-badge">{{ String(index + 1).padStart(3, '0') }}</span>
+            </div>
+
+            <div class="td-info">
+              <div class="info-text">
+                <strong>{{ project.title }}</strong>
+                <small>{{ project.category }}</small>
+              </div>
+            </div>
+
+            <div class="td-tech">
+              <small>{{ project.tech }}</small>
+            </div>
+
+            <div class="td-status">
+              <span class="item-tag" :class="project.status ? project.status.toLowerCase() : 'draft'">
+                <span class="status-dot"></span> {{ project.status || 'Draft' }}
+              </span>
+            </div>
+
+            <div class="td-actions">
+              <button
+                class="action-pill view-pill"
+                type="button"
+                title="View project"
+                @click.stop="selectProject(project)">
+                <i class="bi bi-eye"></i> View
+              </button>
+              <button
+                class="action-pill edit-pill"
+                type="button"
+                title="Edit project"
+                @click.stop="editProject(project)">
+                <i class="bi bi-pencil-square"></i> Edit
+              </button>
+              <button
+                class="action-pill delete-pill"
+                type="button"
+                title="Delete project"
+                @click.stop="handleDeleteProject(project.id)">
+                <i class="bi bi-trash3"></i> Delete
+              </button>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
 
     <div class="panel detail-panel">
       <p class="eyebrow">Details</p>
-      <h3>{{ selectedProject?.title || "Select a project" }}</h3>
-      <p class="muted">
-        {{
-          selectedProject?.description ||
-          "Click a project to view more details."
-        }}
-      </p>
 
-      <div v-if="selectedProject" class="detail-box project-card-preview">
-        <div class="project-preview-media">
-          <img
-            v-if="selectedProject.image"
-            :src="selectedProject.image"
-            :alt="selectedProject.title"
-            class="project-preview-image" />
-          <div v-else class="project-preview-empty">No image</div>
-        </div>
+      <div v-if="!selectedProject" class="detail-empty">
+        <i class="bi bi-collection"></i>
+        <p>Click a project row to preview it here.</p>
+      </div>
 
-        <div class="project-card-head">
-          <strong>{{ selectedProject.title }}</strong>
-          <span class="item-tag">{{ selectedProject.status }}</span>
-        </div>
-
-        <p class="project-card-desc">
-          {{ selectedProject.description || "No description available." }}
-        </p>
-
-        <div class="project-meta-grid">
-          <div class="meta-chip">
-            <small>Tech Stack</small>
-            <strong>{{ selectedProject.category || "-" }}</strong>
+      <div v-else class="hp-card">
+        <!-- Thumbnail with hover overlay – mirrors home page card -->
+        <div
+          class="hp-thumb"
+          :style="{
+            backgroundImage: selectedProject.image
+              ? `url('${selectedProject.image}')`
+              : `linear-gradient(135deg, #e0e7ff, #c7d2fe)`,
+          }">
+          <div class="hp-overlay">
+            <a
+              v-if="selectedProject.openProject"
+              :href="selectedProject.openProject"
+              target="_blank" rel="noopener noreferrer"
+              class="hp-action" title="Open project">
+              <i class="bi bi-box-arrow-up-right"></i>
+            </a>
+            <a
+              v-if="selectedProject.githubLink"
+              :href="selectedProject.githubLink"
+              target="_blank" rel="noopener noreferrer"
+              class="hp-action" title="GitHub">
+              <i class="bi bi-github"></i>
+            </a>
+            <a
+              v-if="selectedProject.link"
+              :href="selectedProject.link"
+              target="_blank" rel="noopener noreferrer"
+              class="hp-action" title="Live preview">
+              <i class="bi bi-play-circle"></i>
+            </a>
           </div>
-          <div class="meta-chip">
-            <small>Tech Details</small>
-            <strong>{{ selectedProject.tech || "-" }}</strong>
-          </div>
+          <span class="hp-status-badge" :class="selectedProject.status ? selectedProject.status.toLowerCase() : 'draft'">
+            <span class="status-dot"></span> {{ selectedProject.status || 'Draft' }}
+          </span>
         </div>
 
-        <div class="project-links-row" style="display: flex; gap: 8px; flex-wrap: wrap;">
-          <a
-            v-if="selectedProject.openProject"
-            class="project-link"
-            :href="selectedProject.openProject"
-            target="_blank"
-            rel="noopener noreferrer">
-            <i class="bi bi-box-arrow-up-right"></i>
-            Open project
-          </a>
-          <a
-            v-if="selectedProject.link"
-            class="project-link"
-            :href="selectedProject.link"
-            target="_blank"
-            rel="noopener noreferrer">
-            <i class="bi bi-play-circle"></i>
-            Preview
-          </a>
-          <a
-            v-if="selectedProject.githubLink"
-            class="project-link"
-            :href="selectedProject.githubLink"
-            target="_blank"
-            rel="noopener noreferrer">
-            <i class="bi bi-github"></i>
-            GitHub
-          </a>
+        <!-- Card body -->
+        <div class="hp-body">
+          <div class="hp-tags">
+            <span
+              v-for="tag in (selectedProject.tags && selectedProject.tags.length
+                ? selectedProject.tags
+                : (selectedProject.tech ? selectedProject.tech.split(',') : []))"
+              :key="tag"
+              class="hp-tag">
+              {{ tag.trim() }}
+            </span>
+          </div>
+          <h3 class="hp-title">{{ selectedProject.title }}</h3>
+          <p class="hp-desc">
+            {{ selectedProject.description || selectedProject.desc || 'No description available.' }}
+          </p>
+          <div class="hp-edit-row">
+            <button class="hp-btn hp-edit" type="button" @click="editProject(selectedProject)">
+              <i class="bi bi-pencil-square"></i> Edit
+            </button>
+            <button class="hp-btn hp-delete" type="button" @click="handleDeleteProject(selectedProject.id)">
+              <i class="bi bi-trash3"></i> Delete
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -277,6 +312,27 @@ const projectForm = ref({
   description: "",
   status: "Draft",
 });
+
+function getInitials(title) {
+  if (!title) return "P";
+  const words = title.split(" ").filter(w => w);
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase();
+  }
+  return title.substring(0, 2).toUpperCase();
+}
+
+function getAvatarColor(title) {
+  const colors = ["#dbeafe", "#e0e7ff", "#f3e8ff", "#fae8ff", "#ffe4e6", "#ffedd5", "#fef9c3", "#dcfce7"];
+  const textColors = ["#1e40af", "#3730a3", "#6b21a8", "#86198f", "#be123c", "#c2410c", "#a16207", "#166534"];
+  if (!title) return { bg: colors[0], text: textColors[0] };
+  let hash = 0;
+  for (let i = 0; i < title.length; i++) {
+    hash = title.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  const index = Math.abs(hash) % colors.length;
+  return { bg: colors[index], text: textColors[index] };
+}
 
 const availableCategories = computed(() => {
   return props.categories.filter(c => !projectForm.value.categoryIds.includes(c.id));
@@ -605,24 +661,54 @@ async function handleDeleteProject(projectId) {
   border-color: #c7d2fe;
 }
 
-.list-stack {
-  display: grid;
-  gap: 10px;
+.table-container {
+  display: flex;
+  flex-direction: column;
   margin-top: 16px;
+  overflow-x: auto;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  padding: 0 16px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  min-width: 700px;
+}
+
+.th-id, .td-id { width: 60px; flex-shrink: 0; }
+.th-info, .td-info { flex: 2; min-width: 220px; }
+.th-tech, .td-tech { flex: 1.5; min-width: 150px; }
+.th-status, .td-status { width: 120px; flex-shrink: 0; }
+.th-actions, .td-actions { width: 220px; flex-shrink: 0; display: flex; justify-content: flex-end; }
+
+.list-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 700px;
 }
 
 .list-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
+  width: 100%;
+  padding: 12px 16px;
   border-radius: 16px;
   border: 1px solid rgba(148, 163, 184, 0.18);
   background: #fff;
   text-align: left;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease;
   cursor: pointer;
+}
+
+.list-item:hover {
+  border-color: #94a3b8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .list-item.selected {
@@ -630,157 +716,288 @@ async function handleDeleteProject(projectId) {
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
 }
 
-.list-item:hover {
-  border-color: #94a3b8;
+.td-id .index-badge {
+  font-weight: 700;
+  color: #6366f1;
+  font-size: 13px;
+  background: #e0e7ff;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
-.list-item strong {
-  display: block;
-  margin-bottom: 4px;
+.td-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.td-info .info-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.td-info strong {
   color: #0f172a;
+  font-size: 14px;
+  margin-bottom: 2px;
 }
 
-.list-item small, .muted {
+.td-info small, .td-tech small {
+  color: #64748b;
+  font-size: 12px;
+}
+
+.muted {
   color: #64748b;
 }
 
 .item-tag {
-  padding: 7px 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
   border-radius: 999px;
   font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
   background: #e0f2fe;
   color: #0369a1;
-  white-space: nowrap;
 }
 
-.row-actions {
+.item-tag .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.item-tag.draft {
+  background: #f1f5f9;
+  color: #475569;
+}
+.item-tag.live {
+  background: #dcfce7;
+  color: #166534;
+}
+.item-tag.archived {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.td-actions {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
+  gap: 6px;
 }
 
-.icon-btn {
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
+.action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
   border: 1px solid rgba(148, 163, 184, 0.24);
   background: #fff;
-  color: #0f172a;
+  color: #475569;
   transition: all 0.2s ease;
 }
 
-.icon-btn:hover {
-  transform: translateY(-2px);
-  border-color: #c7d2fe;
-  color: #6366f1;
+.action-pill:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
 }
 
-.danger-icon {
-  color: #b91c1c;
-  border-color: #fecaca;
-  background: #fff5f5;
-}
-
-.danger-icon:hover {
-  color: #991b1b;
-  border-color: #fca5a5;
-  background: #fff1f2;
-}
+.view-pill:hover { color: #2563eb; border-color: #bfdbfe; background: #eff6ff; }
+.edit-pill:hover { color: #16a34a; border-color: #bbf7d0; background: #f0fdf4; }
+.delete-pill:hover { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
 
 .detail-panel {
   align-self: start;
 }
 
-.detail-box {
-  margin-top: 16px;
-  padding: 16px;
-  border-radius: 16px;
-  background: #f8fbff;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-}
-
-.project-card-preview {
-  display: grid;
-  gap: 14px;
-}
-
-.project-preview-media {
-  width: 100%;
-  height: 170px;
-  border-radius: 14px;
-  overflow: hidden;
-  background: #e2e8f0;
-}
-
-.project-preview-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.project-preview-empty {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  font-size: 13px;
-  color: #64748b;
-}
-
-.project-card-head {
+/* ──────────────────────────────────────────────────
+   Empty state
+────────────────────────────────────────────────── */
+.detail-empty {
+  margin-top: 24px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.project-card-head strong {
-  font-size: 1rem;
-  color: #0f172a;
-}
-
-.project-card-desc {
-  margin: 0;
-  color: #475569;
-  line-height: 1.6;
-}
-
-.project-meta-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
-}
-
-.meta-chip {
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: #fff;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  display: grid;
-  gap: 6px;
-}
-
-.meta-chip small {
-  text-transform: uppercase;
-  font-size: 11px;
-  color: #64748b;
-}
-
-.project-link {
-  display: inline-flex;
+  flex-direction: column;
   align-items: center;
   gap: 8px;
-  text-decoration: none;
-  padding: 9px 12px;
-  border-radius: 10px;
-  border: 1px solid #c7d2fe;
-  background: #fff;
-  color: #2563eb;
-  font-size: 13px;
-  font-weight: 600;
+  color: #94a3b8;
+  text-align: center;
+  padding: 40px 20px;
 }
+.detail-empty i {
+  font-size: 40px;
+  color: #cbd5e1;
+}
+.detail-empty p {
+  margin: 0;
+  font-size: 14px;
+}
+
+/* ──────────────────────────────────────────────────
+   Home-page card mirror (hp-* classes)
+────────────────────────────────────────────────── */
+.hp-card {
+  margin-top: 12px;
+  border: 1px solid #f1f5f9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+  transition: all 0.25s ease;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+}
+
+.hp-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  border-color: #e2e8f0;
+}
+
+/* Thumbnail */
+.hp-thumb {
+  height: 180px;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  background-color: #e0e7ff;
+}
+
+/* Hover overlay – same as home page */
+.hp-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.hp-card:hover .hp-overlay {
+  opacity: 1;
+}
+
+.hp-action {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border-radius: 50%;
+  color: #1e293b;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.hp-action:hover {
+  background: #6366f1;
+  color: #fff;
+}
+
+/* Status badge pinned top-right of image */
+.hp-status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.92);
+  color: #475569;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+.hp-status-badge .status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #94a3b8;
+}
+.hp-status-badge.live { color: #166534; }
+.hp-status-badge.live .status-dot { background: #22c55e; }
+.hp-status-badge.draft { color: #475569; }
+.hp-status-badge.draft .status-dot { background: #94a3b8; }
+.hp-status-badge.archived { color: #991b1b; }
+.hp-status-badge.archived .status-dot { background: #ef4444; }
+
+/* Card body */
+.hp-body {
+  padding: 1rem 1.1rem 1.25rem;
+}
+
+.hp-tags {
+  display: flex;
+  gap: 0.35rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.5rem;
+}
+
+.hp-tag {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: #6366f1;
+  background: rgba(99, 102, 241, 0.06);
+  padding: 0.15rem 0.5rem;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.hp-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 0.35rem;
+}
+
+.hp-desc {
+  font-size: 0.83rem;
+  color: #64748b;
+  line-height: 1.55;
+  margin: 0 0 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hp-edit-row {
+  display: flex;
+  gap: 8px;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+}
+
+.hp-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  border: 1px solid rgba(148, 163, 184, 0.24);
+  background: #fff;
+  color: #475569;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.hp-edit:hover  { color: #16a34a; border-color: #bbf7d0; background: #f0fdf4; }
+.hp-delete:hover { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
 
 .error-banner {
   margin: 1rem 0;

@@ -22,34 +22,56 @@
         </div>
       </div>
 
-      <div class="list-stack categories">
-        <button
-          v-for="category in filteredCategories"
-          :key="category.id"
-          class="list-item"
-          :class="{ selected: selectedCategory?.id === category.id }"
-          @click="selectCategory(category)">
-          <div>
-            <strong>{{ category.name }}</strong>
-          </div>
-          <div class="row-actions">
-            <span class="item-tag">{{ category.items }} items</span>
-            <button
-              class="icon-btn"
-              type="button"
-              title="Edit tech stack"
-              @click.stop="editCategory(category)">
-              <i class="bi bi-pencil-square"></i>
-            </button>
-            <button
-              class="icon-btn danger-icon"
-              type="button"
-              title="Delete tech stack"
-              @click.stop="handleDeleteCategory(category.id)">
-              <i class="bi bi-trash3"></i>
-            </button>
-          </div>
-        </button>
+      <div class="table-container">
+        <div class="table-header">
+          <div class="th-id">#</div>
+          <div class="th-info">Tech Stack Name</div>
+          <div class="th-status">Items</div>
+          <div class="th-actions">Action</div>
+        </div>
+
+        <div class="list-stack categories">
+          <button
+            v-for="(category, index) in filteredCategories"
+            :key="category.id"
+            class="list-item"
+            :class="{ selected: selectedCategory?.id === category.id }"
+            @click="selectCategory(category)">
+            
+            <div class="td-id">
+              <span class="index-badge">{{ String(index + 1).padStart(3, '0') }}</span>
+            </div>
+
+            <div class="td-info">
+              <div class="info-text">
+                <strong>{{ category.name }}</strong>
+              </div>
+            </div>
+
+            <div class="td-status">
+              <span class="item-tag items-tag">
+                {{ category.items }} items
+              </span>
+            </div>
+
+            <div class="td-actions">
+              <button
+                class="action-pill edit-pill"
+                type="button"
+                title="Edit tech stack"
+                @click.stop="editCategory(category)">
+                <i class="bi bi-pencil-square"></i> Edit
+              </button>
+              <button
+                class="action-pill delete-pill"
+                type="button"
+                title="Delete tech stack"
+                @click.stop="handleDeleteCategory(category.id)">
+                <i class="bi bi-trash3"></i> Delete
+              </button>
+            </div>
+          </button>
+        </div>
       </div>
     </div>
 
@@ -360,24 +382,53 @@ async function handleDeleteCategory(categoryId) {
   border-color: #c7d2fe;
 }
 
-.list-stack {
-  display: grid;
-  gap: 10px;
+.table-container {
+  display: flex;
+  flex-direction: column;
   margin-top: 16px;
+  overflow-x: auto;
+}
+
+.table-header {
+  display: flex;
+  align-items: center;
+  padding: 0 16px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  min-width: 600px;
+}
+
+.th-id, .td-id { width: 60px; flex-shrink: 0; }
+.th-info, .td-info { flex: 1; min-width: 200px; }
+.th-status, .td-status { width: 120px; flex-shrink: 0; }
+.th-actions, .td-actions { width: 160px; flex-shrink: 0; display: flex; justify-content: flex-end; }
+
+.list-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 600px;
 }
 
 .list-item {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
+  width: 100%;
+  padding: 12px 16px;
   border-radius: 16px;
   border: 1px solid rgba(148, 163, 184, 0.18);
   background: #fff;
   text-align: left;
-  transition: border-color 0.2s, box-shadow 0.2s;
+  transition: all 0.2s ease;
   cursor: pointer;
+}
+
+.list-item:hover {
+  border-color: #94a3b8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 .list-item.selected {
@@ -385,61 +436,62 @@ async function handleDeleteCategory(categoryId) {
   box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
 }
 
-.list-item:hover {
-  border-color: #94a3b8;
+.td-id .index-badge {
+  font-weight: 700;
+  color: #6366f1;
+  font-size: 13px;
+  background: #e0e7ff;
+  padding: 4px 8px;
+  border-radius: 6px;
 }
 
-.list-item strong {
-  display: block;
-  margin-bottom: 4px;
+.td-info .info-text strong {
   color: #0f172a;
+  font-size: 14px;
 }
 
 .item-tag {
-  padding: 7px 10px;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
   border-radius: 999px;
   font-size: 12px;
-  background: #e0f2fe;
-  color: #0369a1;
+  font-weight: 600;
   white-space: nowrap;
 }
 
-.row-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: auto;
+.items-tag {
+  background: #f1f5f9;
+  color: #475569;
 }
 
-.icon-btn {
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border-radius: 12px;
+.td-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.action-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
   border: 1px solid rgba(148, 163, 184, 0.24);
   background: #fff;
-  color: #0f172a;
+  color: #475569;
   transition: all 0.2s ease;
 }
 
-.icon-btn:hover {
-  transform: translateY(-2px);
-  border-color: #c7d2fe;
-  color: #6366f1;
+.action-pill:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #cbd5e1;
 }
 
-.danger-icon {
-  color: #b91c1c;
-  border-color: #fecaca;
-  background: #fff5f5;
-}
-
-.danger-icon:hover {
-  color: #991b1b;
-  border-color: #fca5a5;
-  background: #fff1f2;
-}
+.edit-pill:hover { color: #16a34a; border-color: #bbf7d0; background: #f0fdf4; }
+.delete-pill:hover { color: #dc2626; border-color: #fecaca; background: #fef2f2; }
 
 .error-banner {
   margin: 1rem 0;
