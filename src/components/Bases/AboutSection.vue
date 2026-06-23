@@ -8,12 +8,15 @@
       <span class="about-tag">About Me</span>
       <h1 class="about-heading">Know Me <span class="accent">Better</span></h1>
       <p class="about-sub">A quick overview of who I am and what I do.</p>
+      <div class="lottie-wrapper">
+        <div ref="lottieContainer" class="lottie-animation"></div>
+      </div>
     </div>
   </section>
 
-  <section class="profile">
-    <div class="container">
-      <div class="profile-card">
+  <section class="profile pb-5">
+    <div class="container pt-5">
+      <div class="profile-card pt-5">
         <div class="profile-img-wrap">
           <div class="img-frame">
             <img
@@ -82,12 +85,28 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
+import lottie from "lottie-web";
+import mentalTherapyAnimation from "../../assets/mental-therapy.json";
+
+const lottieContainer = ref(null);
+
+onMounted(() => {
+  if (lottieContainer.value) {
+    lottie.loadAnimation({
+      container: lottieContainer.value,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+      animationData: mentalTherapyAnimation,
+    });
+  }
+});
 
 const personalInfo = [
   { icon: "bi bi-person", label: "Name", value: "Oum Ussa" },
   { icon: "bi bi-envelope", label: "Email", value: "oumussa719@gmail.com" },
-  { icon: "bi bi-geo-alt", label: "Location", value: "Your City, Country" },
+  { icon: "bi bi-geo-alt", label: "Location", value: "Por Sen Chey, Phnom Penh " },
   { icon: "bi bi-calendar3", label: "Experience", value: "1+ Years" },
 ];
 
@@ -225,6 +244,18 @@ const skills = [
   max-width: 440px;
   margin: 0 auto;
   line-height: 1.7;
+}
+
+.lottie-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+.lottie-animation {
+  width: 350px;
+  max-width: 100%;
 }
 
 /* ── Profile Card ── */
