@@ -80,7 +80,8 @@ img {
 [data-bs-theme="dark"] .about-hero,
 [data-bs-theme="dark"] .skills,
 [data-bs-theme="dark"] .timeline-section,
-[data-bs-theme="dark"] .detail-page {
+[data-bs-theme="dark"] .detail-page,
+[data-bs-theme="dark"] .detail-section {
   background: var(--bg-color) !important;
 }
 
@@ -100,7 +101,10 @@ img {
 [data-bs-theme="dark"] .profile-card,
 [data-bs-theme="dark"] .skill-item,
 [data-bs-theme="dark"] .skill-icon,
-[data-bs-theme="dark"] .timeline-col {
+[data-bs-theme="dark"] .timeline-col,
+[data-bs-theme="dark"] .project-info,
+[data-bs-theme="dark"] .meta-card,
+[data-bs-theme="dark"] .media-frame {
   background: #1e293b !important;
   border-color: #334155 !important;
 }
@@ -118,7 +122,9 @@ img {
 [data-bs-theme="dark"] .info-val,
 [data-bs-theme="dark"] .skill-name,
 [data-bs-theme="dark"] .timeline-title,
-[data-bs-theme="dark"] .timeline-content h4 {
+[data-bs-theme="dark"] .timeline-content h4,
+[data-bs-theme="dark"] .project-title,
+[data-bs-theme="dark"] .meta-value {
   color: #f8fafc !important;
 }
 
@@ -132,19 +138,30 @@ img {
 [data-bs-theme="dark"] .about-sub,
 [data-bs-theme="dark"] .bio,
 [data-bs-theme="dark"] .info-label,
-[data-bs-theme="dark"] .timeline-desc {
+[data-bs-theme="dark"] .timeline-desc,
+[data-bs-theme="dark"] .project-desc,
+[data-bs-theme="dark"] .meta-label {
   color: #94a3b8 !important;
 }
 
 [data-bs-theme="dark"] .hero-badge,
 [data-bs-theme="dark"] .btn-outline,
-[data-bs-theme="dark"] .filter-btn {
+[data-bs-theme="dark"] .filter-btn,
+[data-bs-theme="dark"] .github-link {
   background: #1e293b !important;
   color: #cbd5e1 !important;
   border-color: #334155 !important;
 }
 
-[data-bs-theme="dark"] .stack-tag {
+[data-bs-theme="dark"] .github-link:hover {
+  background: #334155 !important;
+  border-color: #475569 !important;
+  color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .stack-tag,
+[data-bs-theme="dark"] .custom-tag,
+[data-bs-theme="dark"] .admin-avatar {
   background: #1e293b !important;
   border-color: #334155 !important;
 }
@@ -196,5 +213,14 @@ img {
 
 [data-bs-theme="dark"] .timeline-dot {
   border-color: #1e293b !important;
+}
+
+[data-bs-theme="dark"] .note-card {
+  background: rgba(249, 115, 22, 0.1) !important;
+  border-color: rgba(249, 115, 22, 0.2) !important;
+}
+
+[data-bs-theme="dark"] .note-card p {
+  color: #fdba74 !important;
 }
 </style>
