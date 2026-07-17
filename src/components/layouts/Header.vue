@@ -140,14 +140,14 @@ onUnmounted(() => {
   right: 0;
   z-index: 1000;
   padding: 0.85rem 0;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  background: transparent;
+  border-bottom: 1px solid transparent;
   transition: all 0.3s ease;
 }
 
 .navbar.scrolled {
   background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
   padding: 0.65rem 0;
   box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
   border-bottom-color: rgba(0, 0, 0, 0.06);
@@ -313,8 +313,8 @@ onUnmounted(() => {
 }
 
 :global([data-bs-theme="dark"]) .navbar {
-  background: rgba(15, 23, 42, 0.8);
-  border-bottom-color: rgba(255, 255, 255, 0.05);
+  background: transparent;
+  border-bottom-color: transparent;
 }
 :global([data-bs-theme="dark"]) .navbar.scrolled {
   background: rgba(15, 23, 42, 0.95);
