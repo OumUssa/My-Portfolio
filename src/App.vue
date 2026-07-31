@@ -76,6 +76,8 @@ img {
 [data-bs-theme="dark"] .hero,
 [data-bs-theme="dark"] .projects,
 [data-bs-theme="dark"] .services,
+[data-bs-theme="dark"] .achievements,
+[data-bs-theme="dark"] .certificates,
 [data-bs-theme="dark"] .contact,
 [data-bs-theme="dark"] .about-hero,
 [data-bs-theme="dark"] .skills,
@@ -92,6 +94,8 @@ img {
 }
 
 [data-bs-theme="dark"] .card,
+[data-bs-theme="dark"] .course-card,
+[data-bs-theme="dark"] .scholarship-meta,
 [data-bs-theme="dark"] .code-card,
 [data-bs-theme="dark"] .float-card,
 [data-bs-theme="dark"] .bg-white,
@@ -113,6 +117,7 @@ img {
 [data-bs-theme="dark"] .section-title,
 [data-bs-theme="dark"] .card-title,
 [data-bs-theme="dark"] .card h3,
+[data-bs-theme="dark"] .course-card h4,
 [data-bs-theme="dark"] .text-dark,
 [data-bs-theme="dark"] h1,
 [data-bs-theme="dark"] h2,
@@ -140,7 +145,8 @@ img {
 [data-bs-theme="dark"] .info-label,
 [data-bs-theme="dark"] .timeline-desc,
 [data-bs-theme="dark"] .project-desc,
-[data-bs-theme="dark"] .meta-label {
+[data-bs-theme="dark"] .meta-label,
+[data-bs-theme="dark"] .meta-item {
   color: #94a3b8 !important;
 }
 
