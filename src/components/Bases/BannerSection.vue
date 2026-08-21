@@ -62,7 +62,7 @@
       <div class="col-12 col-lg-4 order-1 order-lg-2 mb-4 mb-lg-0">
         <div class="border bg-white rounded-4 p-4">
           <div class="profile text-center">
-            <img src="../../assets//Hero_image.png" alt="Profile" class="img-fluid rounded">
+            <img src="../../assets//myimageat_ANT.jpg" alt="Profile" class="img-fluid rounded">
           </div>
         </div>
       </div>
@@ -297,8 +297,8 @@ const techStack = [
 .blob {
   position: absolute;
   border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.5;
+  /* filter: blur(80px); */
+  /* opacity: 0.5; */
   animation: floatBlob 20s ease-in-out infinite;
 }
 
@@ -377,8 +377,7 @@ const techStack = [
 .hero-visual {
   opacity: 0;
   transform: translateY(30px);
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
-}
+  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;}
 
 .hero-visual.visible {
   opacity: 1;
