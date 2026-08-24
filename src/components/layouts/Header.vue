@@ -312,35 +312,7 @@ onUnmounted(() => {
   }
 }
 
-:global([data-bs-theme="dark"]) .navbar {
-  background: transparent;
-  border-bottom-color: transparent;
-}
-:global([data-bs-theme="dark"]) .navbar.scrolled {
-  background: rgba(15, 23, 42, 0.95);
-  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
-  border-bottom-color: rgba(255, 255, 255, 0.08);
-}
-:global([data-bs-theme="dark"]) .logo {
-  color: #f8fafc;
-}
-:global([data-bs-theme="dark"]) .nav-link {
-  color: #94a3b8;
-}
-:global([data-bs-theme="dark"]) .nav-link:hover {
-  color: #f8fafc;
-  background: rgba(99, 102, 241, 0.15);
-}
-:global([data-bs-theme="dark"]) .nav-link.active {
-  background: rgba(99, 102, 241, 0.2);
-}
-:global([data-bs-theme="dark"]) .menu-toggle span {
-  background: #f8fafc;
-}
-@media (max-width: 768px) {
-  :global([data-bs-theme="dark"]) .nav-links {
-    background: #0f172a;
-    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
-  }
-}
+/* Dark-mode overrides for this header live in App.vue's global <style> —
+   Vue's scoped-CSS compiler doesn't reliably support :global(sel) combined
+   with a descendant selector, so those rules silently never matched here. */
 </style>

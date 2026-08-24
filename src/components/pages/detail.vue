@@ -1,9 +1,29 @@
 <template>
   <section class="detail-section">
     <div class="container detail-container">
-      <div v-if="loading" class="state-container">
-        <div class="spinner"></div>
-        <p>Loading project data...</p>
+      <div v-if="loading" class="detail-grid">
+        <div class="main-content">
+          <div class="media-frame skeleton-block"></div>
+          <div class="project-info">
+            <div class="skeleton-block skeleton-line skeleton-detail-title"></div>
+            <div class="skeleton-block skeleton-line"></div>
+            <div class="skeleton-block skeleton-line"></div>
+            <div class="skeleton-block skeleton-line short"></div>
+          </div>
+        </div>
+        <div class="sidebar-content">
+          <div class="meta-card">
+            <div class="skeleton-block skeleton-line skeleton-card-heading"></div>
+            <div class="skeleton-block skeleton-line skeleton-meta"></div>
+            <div class="skeleton-block skeleton-line skeleton-meta"></div>
+            <div class="skeleton-block skeleton-line skeleton-meta short"></div>
+          </div>
+          <div class="meta-card">
+            <div class="skeleton-block skeleton-line skeleton-card-heading"></div>
+            <div class="skeleton-block skeleton-link-block"></div>
+            <div class="skeleton-block skeleton-link-block"></div>
+          </div>
+        </div>
       </div>
       <div v-else-if="error" class="state-container error">
         <i class="bi bi-exclamation-circle" style="font-size: 2rem; margin-bottom: 8px;"></i>
@@ -11,7 +31,7 @@
       </div>
       <div v-else-if="project" class="detail-grid">
         <!-- Left Column: Visuals & Info -->
-        <div class="main-content">
+        <div class="main-content" v-reveal>
           <div class="media-frame">
             <iframe
               v-if="youtubeEmbedUrl"
@@ -41,7 +61,7 @@
         </div>
 
         <!-- Right Column: Meta & Links -->
-        <div class="sidebar-content">
+        <div class="sidebar-content" v-reveal style="transition-delay: 120ms">
           <div class="meta-card">
             <h4 class="card-title">Project Details</h4>
             
@@ -99,6 +119,9 @@
                 class="project-link github-link">
                 <i class="bi bi-github"></i> Source Code
               </a>
+              <p v-if="!hasAnyLink" class="no-links-note">
+                No public links for this project yet.
+              </p>
             </div>
           </div>
           
@@ -121,7 +144,7 @@
 
 <script setup>
 import { computed, defineProps, onMounted, ref, watch } from "vue";
-import { fetchProjects } from "@/data/projectsApi.js";
+import { fetchProjectsSafe } from "@/data/projectsApi.js";
 
 const props = defineProps({
   id: {
@@ -153,6 +176,14 @@ const formattedDate = computed(() => {
   }
 });
 
+const hasAnyLink = computed(() =>
+  Boolean(
+    project.value?.openProject ||
+      project.value?.liveLink ||
+      project.value?.githubLink,
+  ),
+);
+
 const youtubeEmbedUrl = computed(() => {
   if (!project.value?.liveLink) return null;
   const url = project.value.liveLink;
@@ -177,16 +208,9 @@ async function loadProjects() {
   loading.value = true;
   error.value = "";
 
-  try {
-    projects.value = await fetchProjects();
-  } catch (fetchError) {
-    error.value =
-      fetchError instanceof Error
-        ? fetchError.message
-        : "Failed to load project.";
-  } finally {
-    loading.value = false;
-  }
+  const { projects: data } = await fetchProjectsSafe();
+  projects.value = data;
+  loading.value = false;
 }
 
 onMounted(() => {
@@ -414,6 +438,16 @@ watch(
   border-color: #cbd5e1;
 }
 
+.no-links-note {
+  margin: 0;
+  padding: 12px 16px;
+  font-size: 13px;
+  color: #94a3b8;
+  background: #f8fafc;
+  border: 1px dashed #e2e8f0;
+  border-radius: 12px;
+}
+
 .note-card {
   background: #fff8f1;
   border: 1px solid #ffedd5;
@@ -435,6 +469,77 @@ watch(
   line-height: 1.6;
 }
 
+.skeleton-block {
+  position: relative;
+  overflow: hidden;
+  background: #eef2f7;
+  border-radius: 8px;
+}
+
+.skeleton-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+  animation: skeleton-shimmer 1.4s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-block::after {
+    animation: none;
+  }
+}
+
+.skeleton-line {
+  height: 14px;
+  margin-bottom: 12px;
+  border-radius: 4px;
+}
+
+.skeleton-detail-title {
+  height: 28px;
+  width: 60%;
+  margin-bottom: 20px;
+}
+
+.skeleton-card-heading {
+  height: 18px;
+  width: 50%;
+  margin-bottom: 20px;
+}
+
+.skeleton-meta {
+  width: 80%;
+}
+
+.skeleton-meta.short,
+.skeleton-line.short {
+  width: 45%;
+  margin-bottom: 0;
+}
+
+.skeleton-link-block {
+  height: 48px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.skeleton-link-block:last-child {
+  margin-bottom: 0;
+}
+
 .state-container {
   display: flex;
   flex-direction: column;
@@ -446,20 +551,6 @@ watch(
 }
 .state-container.error {
   color: #ef4444;
-}
-
-.spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #e2e8f0;
-  border-top-color: #6366f1;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-  margin-bottom: 16px;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
 }
 
 @media (max-width: 992px) {

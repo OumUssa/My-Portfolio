@@ -1,13 +1,18 @@
 <template>
   <section id="services" class="services">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" v-reveal>
         <span class="section-tag">What I Do</span>
         <h2 class="section-title">My Services</h2>
       </div>
 
       <div class="grid">
-        <div v-for="service in services" :key="service.title" class="card">
+        <div
+          v-for="(service, index) in services"
+          :key="service.title"
+          class="card"
+          v-reveal
+          :style="{ transitionDelay: (index % 3) * 90 + 'ms' }">
           <div class="card-icon">
             <i :class="service.icon"></i>
           </div>
@@ -100,9 +105,9 @@ const services = [
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
-  border-color: #e2e8f0;
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.1);
+  border-color: #c7d2fe;
 }
 
 .card-icon {

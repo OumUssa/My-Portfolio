@@ -1,35 +1,70 @@
 <template>
   <section id="projects" class="projects">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" v-reveal>
         <span class="section-tag">My Work</span>
         <h2 class="section-title">Recent Projects</h2>
+        <p v-if="isFallback && !loading" class="fallback-note">
+          <i class="bi bi-cloud-slash"></i> Showing example projects — live data is temporarily unavailable.
+        </p>
       </div>
 
-      <div v-if="loading" class="state-copy">Loading projects...</div>
-      <div v-else-if="error" class="state-copy state-error">
-        {{ error }}
-      </div>
+      <div v-if="!loading" class="controls-bar" v-reveal>
+        <div class="filter-bar">
+          <button
+            v-for="tab in tabs"
+            :key="tab"
+            class="filter-btn"
+            :class="{ active: activeTab === tab }"
+            @click="activeTab = tab">
+            {{ tab }}
+          </button>
+        </div>
 
-      <div v-else class="filter-bar">
-        <button
-          v-for="tab in tabs"
-          :key="tab"
-          class="filter-btn"
-          :class="{ active: activeTab === tab }"
-          @click="activeTab = tab">
-          {{ tab }}
-        </button>
+        <div class="search-field">
+          <i class="bi bi-search"></i>
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search projects..."
+            aria-label="Search projects" />
+          <button
+            v-if="searchQuery"
+            type="button"
+            class="search-clear"
+            aria-label="Clear search"
+            @click="searchQuery = ''">
+            <i class="bi bi-x"></i>
+          </button>
+        </div>
       </div>
 
       <div class="grid">
-        <transition-group
-          v-if="!loading && !error && filteredProjects.length"
-          name="fade">
+        <template v-if="loading">
+          <div v-for="n in 6" :key="`skeleton-${n}`" class="card skeleton-card">
+            <div class="card-thumb skeleton-block"></div>
+            <div class="card-body">
+              <div class="card-tags">
+                <span class="skeleton-block skeleton-tag"></span>
+                <span class="skeleton-block skeleton-tag"></span>
+              </div>
+              <div class="skeleton-block skeleton-line skeleton-title"></div>
+              <div class="skeleton-block skeleton-line"></div>
+              <div class="skeleton-block skeleton-line short"></div>
+              <div class="card-footer-action">
+                <span class="skeleton-block skeleton-btn"></span>
+              </div>
+            </div>
+          </div>
+        </template>
+
+        <transition-group v-else-if="filteredProjects.length" name="fade">
           <div
-            v-for="project in filteredProjects"
+            v-for="(project, index) in filteredProjects"
             :key="project.id"
-            class="card">
+            class="card"
+            v-reveal
+            :style="{ transitionDelay: (index % 3) * 90 + 'ms' }">
             <div
               class="card-thumb"
               :style="{
@@ -42,6 +77,7 @@
                   <i class="bi bi-eye"></i>
                 </router-link>
                 <a
+                  v-if="project.githubLink"
                   :href="project.githubLink"
                   target="_blank"
                   rel="noopener noreferrer"
@@ -67,8 +103,12 @@
           </div>
         </transition-group>
 
-        <div v-else-if="!loading && !error" class="state-copy state-empty">
-          No projects found.
+        <div v-else class="state-copy state-empty">
+          {{
+            searchQuery
+              ? `No projects match "${searchQuery}".`
+              : "No projects found."
+          }}
         </div>
       </div>
     </div>
@@ -77,12 +117,13 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { fetchProjects } from "@/data/projectsApi.js";
+import { fetchProjectsSafe } from "@/data/projectsApi.js";
 
 const projects = ref([]);
 const loading = ref(true);
-const error = ref("");
+const isFallback = ref(false);
 const activeTab = ref("All");
+const searchQuery = ref("");
 
 const tabs = computed(() => {
   const categories = new Set();
@@ -95,29 +136,34 @@ const tabs = computed(() => {
 });
 
 const filteredProjects = computed(() => {
-  if (activeTab.value === "All") {
-    return projects.value;
+  let result = projects.value;
+
+  if (activeTab.value !== "All") {
+    result = result.filter((project) =>
+      project.categories.includes(activeTab.value),
+    );
   }
 
-  return projects.value.filter((project) =>
-    project.categories.includes(activeTab.value),
-  );
+  const query = searchQuery.value.trim().toLowerCase();
+  if (query) {
+    result = result.filter(
+      (project) =>
+        project.title.toLowerCase().includes(query) ||
+        project.desc.toLowerCase().includes(query) ||
+        project.tags.some((tag) => tag.toLowerCase().includes(query)),
+    );
+  }
+
+  return result;
 });
 
 async function loadProjects() {
   loading.value = true;
-  error.value = "";
 
-  try {
-    projects.value = await fetchProjects();
-  } catch (fetchError) {
-    error.value =
-      fetchError instanceof Error
-        ? fetchError.message
-        : "Failed to load projects.";
-  } finally {
-    loading.value = false;
-  }
+  const { projects: data, isFallback: fallback } = await fetchProjectsSafe();
+  projects.value = data;
+  isFallback.value = fallback;
+  loading.value = false;
 }
 
 onMounted(loadProjects);
@@ -154,12 +200,79 @@ onMounted(loadProjects);
   margin-top: 0.35rem;
 }
 
+.controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2.5rem;
+  flex-wrap: wrap;
+}
+
 .filter-bar {
   display: flex;
   justify-content: center;
   gap: 0.4rem;
-  margin-bottom: 2.5rem;
   flex-wrap: wrap;
+}
+
+.search-field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 240px;
+}
+
+.search-field i.bi-search {
+  position: absolute;
+  left: 0.85rem;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  pointer-events: none;
+}
+
+.search-field input {
+  width: 100%;
+  padding: 0.5rem 2rem 0.5rem 2.1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 100px;
+  font-size: 0.82rem;
+  color: #1e293b;
+  background: #f8fafc;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.search-field input::placeholder {
+  color: #94a3b8;
+}
+
+.search-field input:focus {
+  border-color: #6366f1;
+  background: #fff;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08);
+}
+
+.search-clear {
+  position: absolute;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.search-clear:hover {
+  background: #e2e8f0;
+  color: #475569;
 }
 
 .state-copy {
@@ -170,6 +283,96 @@ onMounted(loadProjects);
 
 .state-error {
   color: #b91c1c;
+}
+
+.skeleton-card {
+  pointer-events: none;
+}
+
+.skeleton-card:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #f1f5f9;
+}
+
+.skeleton-block {
+  position: relative;
+  overflow: hidden;
+  background: #eef2f7;
+  border-radius: 4px;
+}
+
+.skeleton-block::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.65),
+    transparent
+  );
+  animation: skeleton-shimmer 1.4s infinite;
+}
+
+@keyframes skeleton-shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skeleton-card .card-thumb {
+  border-radius: 0;
+}
+
+.skeleton-tag {
+  width: 56px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.skeleton-line {
+  height: 12px;
+  margin-bottom: 0.6rem;
+}
+
+.skeleton-title {
+  height: 18px;
+  width: 70%;
+  margin-bottom: 0.85rem;
+}
+
+.skeleton-line.short {
+  width: 55%;
+  margin-bottom: 0;
+}
+
+.skeleton-btn {
+  width: 130px;
+  height: 34px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-block::after {
+    animation: none;
+  }
+}
+
+.fallback-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.75rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: #92400e;
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.25);
+  border-radius: 100px;
 }
 
 .state-empty {
@@ -218,9 +421,9 @@ onMounted(loadProjects);
 }
 
 .card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.06);
-  border-color: #e2e8f0;
+  transform: translateY(-6px);
+  box-shadow: 0 16px 40px rgba(99, 102, 241, 0.12);
+  border-color: #c7d2fe;
 }
 
 .card-thumb {

@@ -1,14 +1,14 @@
 <template>
   <section id="certificates" class="certificates">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" v-reveal>
         <span class="section-tag">Qualifications</span>
         <h2 class="section-title">My Certificates</h2>
       </div>
 
       <div class="grid">
         <!-- Placeholder for a Certificate -->
-        <div class="card">
+        <div class="card" v-reveal>
           <div class="card-icon">
             <i class="bi bi-award"></i>
           </div>
@@ -71,9 +71,9 @@
 }
 
 .card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.05);
-  border-color: #e2e8f0;
+  transform: translateY(-5px);
+  box-shadow: 0 12px 30px rgba(99, 102, 241, 0.1);
+  border-color: #c7d2fe;
 }
 
 .card-icon {

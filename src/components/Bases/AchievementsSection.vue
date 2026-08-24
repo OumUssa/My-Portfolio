@@ -1,15 +1,15 @@
 <template>
   <section id="achievements" class="achievements">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" v-reveal>
         <span class="section-tag">Milestones</span>
         <h2 class="section-title">My Achievements</h2>
       </div>
 
       <div class="achievement-content">
-        <div class="text-content">
+        <div class="text-content" v-reveal>
           <h3>ANT TECHNOLOGY TRAINING CENTER <span class="badge">(Scholarship Trainee)</span></h3>
-          
+
           <div class="scholarship-meta">
             <div class="meta-item"><i class="bi bi-calendar3"></i> <span>16 June 2025 - 17 July 2026</span></div>
             <div class="meta-item"><i class="bi bi-clock"></i> <span>Mon-Fri (700 hours)</span></div>
@@ -35,7 +35,7 @@
             </div>
           </div>
         </div>
-        <div class="images-grid">
+        <div class="images-grid" v-reveal>
           <img src="@/assets/Achievements_1.jpg" alt="Achievement 1" class="achievement-img" />
           <img src="@/assets/Achievements_2.jpg" alt="Achievement 2" class="achievement-img" />
           <img src="@/assets/Achievements_3.jpg" alt="Achievement 3" class="achievement-img" />

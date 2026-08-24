@@ -1,7 +1,7 @@
 <template>
   <section id="contact" class="contact">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" v-reveal>
         <span class="section-tag">Get In Touch</span>
         <h2 class="section-title">Let's Work Together</h2>
         <p class="section-desc">
@@ -9,7 +9,7 @@
         </p>
       </div>
 
-      <div class="contact-grid">
+      <div class="contact-grid" v-reveal>
         <div class="info-panel">
           <h3>Contact Information</h3>
           <p class="info-desc">Fill up the form and I'll get back to you within 24 hours.</p>
@@ -181,6 +181,7 @@ const sendEmail = async () => {
   overflow: hidden;
   border: 1px solid #e2e8f0;
   background: #fff;
+  box-shadow: 0 20px 60px rgba(99, 102, 241, 0.08);
 }
 
 /* Info Panel */

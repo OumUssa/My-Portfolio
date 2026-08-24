@@ -6,10 +6,12 @@ import 'bootstrap-icons/font/bootstrap-icons.css';
 
 import App from './App.vue'
 import router from './router'
+import reveal from './directives/reveal.js'
 
 const app = createApp(App)
 
 app.use(createPinia())
 app.use(router)
+app.directive('reveal', reveal)
 
 app.mount('#app')

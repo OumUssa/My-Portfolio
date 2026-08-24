@@ -72,6 +72,54 @@ img {
   display: block;
 }
 
+/* Scroll-reveal animation (see src/directives/reveal.js) */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Shared section-tag / section-title accent, used across every page section */
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.section-tag::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.12);
+}
+
+.section-head .section-title::after {
+  content: "";
+  display: block;
+  width: 44px;
+  height: 4px;
+  margin: 0.85rem auto 0;
+  border-radius: 4px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
 /* Global Dark Mode Overrides for Portfolio Components */
 [data-bs-theme="dark"] .hero,
 [data-bs-theme="dark"] .projects,
@@ -205,6 +253,34 @@ img {
   border-top-color: #1e293b !important;
 }
 
+[data-bs-theme="dark"] .search-field input {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .search-field input::placeholder {
+  color: #64748b !important;
+}
+
+[data-bs-theme="dark"] .search-clear:hover {
+  background: #334155 !important;
+  color: #f8fafc !important;
+}
+
+[data-bs-theme="dark"] .skeleton-block {
+  background: #334155 !important;
+}
+
+[data-bs-theme="dark"] .skeleton-block::after {
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(148, 163, 184, 0.25),
+    transparent
+  ) !important;
+}
+
 [data-bs-theme="dark"] .info-item:hover {
   background: #334155 !important;
 }
@@ -228,5 +304,39 @@ img {
 
 [data-bs-theme="dark"] .note-card p {
   color: #fdba74 !important;
+}
+
+/* Header dark-mode overrides (moved here from Header.vue's scoped style,
+   which couldn't express :global(sel) + descendant reliably) */
+[data-bs-theme="dark"] .navbar {
+  background: transparent;
+  border-bottom-color: transparent;
+}
+[data-bs-theme="dark"] .navbar.scrolled {
+  background: rgba(15, 23, 42, 0.95);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+[data-bs-theme="dark"] .logo {
+  color: #f8fafc;
+}
+[data-bs-theme="dark"] .nav-link {
+  color: #94a3b8;
+}
+[data-bs-theme="dark"] .nav-link:hover {
+  color: #f8fafc;
+  background: rgba(99, 102, 241, 0.15);
+}
+[data-bs-theme="dark"] .nav-link.active {
+  background: rgba(99, 102, 241, 0.2);
+}
+[data-bs-theme="dark"] .menu-toggle span {
+  background: #f8fafc;
+}
+@media (max-width: 768px) {
+  [data-bs-theme="dark"] .nav-links {
+    background: #0f172a;
+    box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+  }
 }
 </style>

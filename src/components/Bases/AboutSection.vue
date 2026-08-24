@@ -16,7 +16,7 @@
 
   <section class="profile pb-5">
     <div class="container pt-5">
-      <div class="profile-card pt-5">
+      <div class="profile-card pt-5" v-reveal>
         <div class="profile-img-wrap">
           <div class="img-frame">
             <img
@@ -62,12 +62,12 @@
 
   <section class="timeline-section">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" v-reveal>
         <span class="section-tag">My Journey</span>
         <h2 class="section-title">Experience & Education</h2>
       </div>
       <div class="timeline-grid">
-        <div class="timeline-col">
+        <div class="timeline-col" v-reveal>
           <h3 class="timeline-title"><i class="bi bi-briefcase"></i> Experience</h3>
           <div class="timeline-wrap">
             <div class="timeline-item" v-for="exp in experience" :key="exp.title">
@@ -79,7 +79,7 @@
             </div>
           </div>
         </div>
-        <div class="timeline-col">
+        <div class="timeline-col" v-reveal>
           <h3 class="timeline-title"><i class="bi bi-mortarboard"></i> Education</h3>
           <div class="timeline-wrap">
             <div class="timeline-item" v-for="edu in education" :key="edu.title">
@@ -98,12 +98,17 @@
 
   <section class="skills">
     <div class="container">
-      <div class="section-head">
+      <div class="section-head" v-reveal>
         <span class="section-tag">My Expertise</span>
         <h2 class="section-title">Skills & Technologies</h2>
       </div>
       <div class="skills-grid">
-        <div v-for="skill in skills" :key="skill.name" class="skill-item">
+        <div
+          v-for="(skill, index) in skills"
+          :key="skill.name"
+          class="skill-item"
+          v-reveal
+          :style="{ transitionDelay: (index % 4) * 70 + 'ms' }">
           <div
             class="skill-icon"
             :style="{
