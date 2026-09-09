@@ -1,6 +1,4 @@
-import staticProjects from "./staticProjects.js";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://portfolio.cms-jubpet.linkpc.net";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://my-portfolio-back-end-1.onrender.com";
 
 function normalizeAssetUrl(value) {
   if (!value || typeof value !== "string") {
@@ -14,7 +12,7 @@ function normalizeAssetUrl(value) {
     if (
       urlObj.hostname === "localhost" ||
       urlObj.hostname === "127.0.0.1" ||
-      urlObj.hostname.includes("portfolio.cms-jubpet")
+      urlObj.hostname.includes("my-portfolio-back-end-1.onrender.com")
     ) {
       value = urlObj.pathname;
     }
@@ -124,10 +122,8 @@ export function normalizeProject(project) {
   };
 }
 
-export async function fetchProjects(options = {}) {
-  const response = await fetch(`${API_BASE_URL}/api/auth/projects`, {
-    signal: options.signal,
-  });
+export async function fetchProjects() {
+  const response = await fetch(`${API_BASE_URL}/api/auth/projects`);
 
   if (!response.ok) {
     throw new Error(`Failed to load projects (${response.status})`);
@@ -140,30 +136,6 @@ export async function fetchProjects(options = {}) {
   }
 
   return payload.data.map(normalizeProject);
-}
-
-// Used by public-facing pages so a down/unreachable backend never blocks the
-// site — it quietly falls back to static, front-end-only project data instead
-// of showing an error (or an endless loading state) to visitors. The backend
-// can be unreachable in a way that hangs rather than fails fast (dropped
-// packets, no response at all), so this enforces its own short timeout
-// instead of waiting on the browser's default connection timeout.
-export async function fetchProjectsSafe(timeoutMs = 6000) {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const projects = await fetchProjects({ signal: controller.signal });
-    if (projects.length) {
-      return { projects, isFallback: false };
-    }
-    return { projects: staticProjects, isFallback: true };
-  } catch (fetchError) {
-    console.warn("Backend unavailable, using static projects:", fetchError);
-    return { projects: staticProjects, isFallback: true };
-  } finally {
-    clearTimeout(timer);
-  }
 }
 
 export async function createProject(project, token) {

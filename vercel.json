@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/:match*",
-      "destination": "https://portfolio.cms-jubpet.linkpc.net/api/:match*"
+      "destination": "https://my-portfolio-back-end-1.onrender.com/api/:match*"
     },
     {
       "source": "/uploads/:match*",
-      "destination": "https://portfolio.cms-jubpet.linkpc.net/uploads/:match*"
+      "destination": "https://my-portfolio-back-end-1.onrender.com/uploads/:match*"
     },
     {
       "source": "/(.*)",

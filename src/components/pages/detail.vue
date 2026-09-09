@@ -144,7 +144,7 @@
 
 <script setup>
 import { computed, defineProps, onMounted, ref, watch } from "vue";
-import { fetchProjectsSafe } from "@/data/projectsApi.js";
+import { fetchProjects } from "@/data/projectsApi.js";
 
 const props = defineProps({
   id: {
@@ -208,9 +208,16 @@ async function loadProjects() {
   loading.value = true;
   error.value = "";
 
-  const { projects: data } = await fetchProjectsSafe();
-  projects.value = data;
-  loading.value = false;
+  try {
+    projects.value = await fetchProjects();
+  } catch (fetchError) {
+    error.value =
+      fetchError instanceof Error
+        ? fetchError.message
+        : "Failed to load project.";
+  } finally {
+    loading.value = false;
+  }
 }
 
 onMounted(() => {

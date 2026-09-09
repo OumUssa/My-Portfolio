@@ -426,7 +426,9 @@ function toStoredProject(project, existingProject = null) {
   const category = normalizeCategoryName(project.category);
   const techTags = splitTech(project.tech);
   const createdAt = existingProject?.createdAt || project.createdAt || new Date().toISOString().slice(0, 10);
-  const previousTags = Array.isArray(existingProject?.tags) ? existingProject.tags : [];
+  const previousTags = Array.isArray(existingProject?.categories) && existingProject.categories.length
+    ? existingProject.categories
+    : splitTech(existingProject?.tech);
   const tags = techTags.length ? techTags : previousTags.length ? previousTags : [category];
 
   return {
@@ -434,9 +436,9 @@ function toStoredProject(project, existingProject = null) {
     adminId: existingProject?.adminId || null,
     adminName: existingProject?.adminName || "Admin",
     title: (project.title && typeof project.title === "string" ? project.title.trim() : "") || "Untitled project",
-    desc: project.description && typeof project.description === "string" ? project.description.trim() : "",
+    desc: (project.description && typeof project.description === "string" ? project.description.trim() : "") || existingProject?.description || "",
     image: (project.image && typeof project.image === "string" ? project.image.trim() : "") || existingProject?.image || "",
-    liveLink: project.link && typeof project.link === "string" ? project.link.trim() : "",
+    liveLink: (project.link && typeof project.link === "string" ? project.link.trim() : "") || existingProject?.link || existingProject?.liveLink || "",
     githubLink: (project.githubLink && typeof project.githubLink === "string" ? project.githubLink.trim() : "") || existingProject?.githubLink || "",
     openProject: (project.openProject && typeof project.openProject === "string" ? project.openProject.trim() : "") || existingProject?.openProject || "",
     createdAt,

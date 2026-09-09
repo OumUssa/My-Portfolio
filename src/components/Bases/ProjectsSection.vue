@@ -4,12 +4,17 @@
       <div class="section-head" v-reveal>
         <span class="section-tag">My Work</span>
         <h2 class="section-title">Recent Projects</h2>
-        <p v-if="isFallback && !loading" class="fallback-note">
-          <i class="bi bi-cloud-slash"></i> Showing example projects — live data is temporarily unavailable.
-        </p>
       </div>
 
-      <div v-if="!loading" class="controls-bar" v-reveal>
+      <div v-if="error && !loading" class="error-state">
+        <i class="bi bi-exclamation-circle"></i>
+        <p>{{ error }}</p>
+        <button type="button" class="retry-btn" @click="loadProjects">
+          <i class="bi bi-arrow-clockwise"></i> Try again
+        </button>
+      </div>
+
+      <div v-if="!loading && !error" class="controls-bar" v-reveal>
         <div class="filter-bar">
           <button
             v-for="tab in tabs"
@@ -39,7 +44,7 @@
         </div>
       </div>
 
-      <div class="grid">
+      <div v-if="!error" class="grid">
         <template v-if="loading">
           <div v-for="n in 6" :key="`skeleton-${n}`" class="card skeleton-card">
             <div class="card-thumb skeleton-block"></div>
@@ -117,11 +122,11 @@
 
 <script setup>
 import { computed, onMounted, ref } from "vue";
-import { fetchProjectsSafe } from "@/data/projectsApi.js";
+import { fetchProjects } from "@/data/projectsApi.js";
 
 const projects = ref([]);
 const loading = ref(true);
-const isFallback = ref(false);
+const error = ref("");
 const activeTab = ref("All");
 const searchQuery = ref("");
 
@@ -159,11 +164,18 @@ const filteredProjects = computed(() => {
 
 async function loadProjects() {
   loading.value = true;
+  error.value = "";
 
-  const { projects: data, isFallback: fallback } = await fetchProjectsSafe();
-  projects.value = data;
-  isFallback.value = fallback;
-  loading.value = false;
+  try {
+    projects.value = await fetchProjects();
+  } catch (fetchError) {
+    error.value =
+      fetchError instanceof Error
+        ? fetchError.message
+        : "Failed to load projects.";
+  } finally {
+    loading.value = false;
+  }
 }
 
 onMounted(loadProjects);
@@ -281,10 +293,6 @@ onMounted(loadProjects);
   margin-bottom: 2rem;
 }
 
-.state-error {
-  color: #b91c1c;
-}
-
 .skeleton-card {
   pointer-events: none;
 }
@@ -361,18 +369,45 @@ onMounted(loadProjects);
   }
 }
 
-.fallback-note {
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 3rem 1rem;
+  text-align: center;
+  color: #b91c1c;
+}
+
+.error-state i {
+  font-size: 1.75rem;
+}
+
+.error-state p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.9rem;
+}
+
+.retry-btn {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  margin-top: 0.75rem;
-  padding: 0.35rem 0.85rem;
-  font-size: 0.78rem;
-  font-weight: 500;
-  color: #92400e;
-  background: rgba(245, 158, 11, 0.1);
-  border: 1px solid rgba(245, 158, 11, 0.25);
-  border-radius: 100px;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #475569;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-btn:hover {
+  border-color: #c7d2fe;
+  color: #6366f1;
 }
 
 .state-empty {

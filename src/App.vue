@@ -16,7 +16,11 @@ onMounted(() => {
   <div id="app">
     <Header v-if="route.name !== 'Admin' && route.name !== 'Login'" />
     <main class="main-content">
-      <router-view></router-view>
+      <router-view v-slot="{ Component }">
+        <transition name="page" mode="out-in">
+          <component :is="Component" :key="route.fullPath" />
+        </transition>
+      </router-view>
     </main>
   </div>
 </template>
@@ -70,6 +74,31 @@ a {
 img {
   max-width: 100%;
   display: block;
+}
+
+/* Route-switch transition */
+.page-enter-active,
+.page-leave-active {
+  transition:
+    opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(10px);
+}
+
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-active,
+  .page-leave-active {
+    transition: none;
+  }
 }
 
 /* Scroll-reveal animation (see src/directives/reveal.js) */

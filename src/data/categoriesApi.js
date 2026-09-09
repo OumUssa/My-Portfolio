@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://portfolio.cms-jubpet.linkpc.net";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://my-portfolio-back-end-1.onrender.com";
 
 export async function fetchCategories() {
   const response = await fetch(`${API_BASE_URL}/api/auth/categories`);
