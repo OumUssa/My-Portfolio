@@ -79,8 +79,10 @@
                 class="action-pill delete-pill"
                 type="button"
                 title="Delete project"
+                :disabled="deletingId === project.id"
                 @click.stop="handleDeleteProject(project.id)">
-                <i class="bi bi-trash3"></i> Delete
+                <span v-if="deletingId === project.id" class="btn-spinner"></span>
+                <i v-else class="bi bi-trash3"></i> {{ deletingId === project.id ? "Deleting..." : "Delete" }}
               </button>
             </div>
           </button>
@@ -153,8 +155,9 @@
             <button class="hp-btn hp-edit" type="button" @click="editProject(selectedProject)">
               <i class="bi bi-pencil-square"></i> Edit
             </button>
-            <button class="hp-btn hp-delete" type="button" @click="handleDeleteProject(selectedProject.id)">
-              <i class="bi bi-trash3"></i> Delete
+            <button class="hp-btn hp-delete" type="button" :disabled="deletingId === selectedProject.id" @click="handleDeleteProject(selectedProject.id)">
+              <span v-if="deletingId === selectedProject.id" class="btn-spinner"></span>
+              <i v-else class="bi bi-trash3"></i> {{ deletingId === selectedProject.id ? "Deleting..." : "Delete" }}
             </button>
           </div>
         </div>
@@ -257,8 +260,9 @@
               </div>
 
               <div class="form-actions modal-actions">
-                <button class="primary" @click="saveProject">
-                  {{ editingProjectId ? "Update project" : "Add project" }}
+                <button class="primary" :disabled="saving || uploadingImage" @click="saveProject">
+                  <span v-if="saving" class="btn-spinner"></span>
+                  {{ saving ? (editingProjectId ? "Updating..." : "Adding...") : (editingProjectId ? "Update project" : "Add project") }}
                 </button>
                 <button class="secondary" type="button" @click="closeModal">
                   Cancel
@@ -299,6 +303,8 @@ const isModalOpen = ref(false);
 const editingProjectId = ref(null);
 const loadError = ref("");
 const uploadingImage = ref(false);
+const saving = ref(false);
+const deletingId = ref(null);
 const localImagePreview = ref(null);
 
 const projectForm = ref({
@@ -505,7 +511,9 @@ function editProject(project) {
 }
 
 async function saveProject() {
+  if (saving.value) return;
   loadError.value = "";
+  saving.value = true;
   try {
     const existingProject = props.projects.find(p => p.id === editingProjectId.value);
     const payload = toStoredProject(
@@ -546,11 +554,14 @@ async function saveProject() {
     closeModal();
   } catch (err) {
     loadError.value = err instanceof Error ? err.message : "Failed to save project.";
+  } finally {
+    saving.value = false;
   }
 }
 
 async function handleDeleteProject(projectId) {
-  if (!confirm("Are you sure you want to delete this project?")) return;
+  if (deletingId.value || !confirm("Are you sure you want to delete this project?")) return;
+  deletingId.value = projectId;
   try {
     if (!props.token) {
       alert("Missing admin token. Please login again.");
@@ -561,6 +572,8 @@ async function handleDeleteProject(projectId) {
     emit("update:projects", nextProjects);
   } catch (err) {
     alert(err instanceof Error ? err.message : "Failed to delete project.");
+  } finally {
+    deletingId.value = null;
   }
 }
 </script>
@@ -1259,5 +1272,26 @@ async function handleDeleteProject(projectId) {
     flex-direction: column;
     grid-template-columns: 1fr;
   }
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  vertical-align: -2px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.7s linear infinite;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>

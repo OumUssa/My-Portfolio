@@ -66,8 +66,10 @@
                 class="action-pill delete-pill"
                 type="button"
                 title="Delete tech stack"
+                :disabled="deletingId === category.id"
                 @click.stop="handleDeleteCategory(category.id)">
-                <i class="bi bi-trash3"></i> Delete
+                <span v-if="deletingId === category.id" class="btn-spinner"></span>
+                <i v-else class="bi bi-trash3"></i> {{ deletingId === category.id ? "Deleting..." : "Delete" }}
               </button>
             </div>
           </button>
@@ -100,8 +102,9 @@
               </div>
 
               <div class="form-actions modal-actions">
-                <button class="primary" @click="saveCategory">
-                  {{ editingCategoryId ? "Update tech stack" : "Add tech stack" }}
+                <button class="primary" :disabled="saving" @click="saveCategory">
+                  <span v-if="saving" class="btn-spinner"></span>
+                  {{ saving ? (editingCategoryId ? "Updating..." : "Adding...") : (editingCategoryId ? "Update tech stack" : "Add tech stack") }}
                 </button>
                 <button class="secondary" type="button" @click="closeModal">
                   Cancel
@@ -142,6 +145,8 @@ const selectedCategory = ref(null);
 const isModalOpen = ref(false);
 const editingCategoryId = ref(null);
 const loadError = ref("");
+const saving = ref(false);
+const deletingId = ref(null);
 
 const categoryForm = ref({
   name: "",
@@ -193,7 +198,9 @@ function editCategory(category) {
 }
 
 async function saveCategory() {
+  if (saving.value) return;
   loadError.value = "";
+  saving.value = true;
   try {
     const nextName = normalizeCategoryName(categoryForm.value.name);
     const existingCategory = props.categories.find(c => c.id === editingCategoryId.value);
@@ -257,16 +264,19 @@ async function saveCategory() {
     closeModal();
   } catch (error) {
     loadError.value = error instanceof Error ? error.message : "Failed to save tech stack.";
+  } finally {
+    saving.value = false;
   }
 }
 
 async function handleDeleteCategory(categoryId) {
-  if (!confirm("Are you sure you want to delete this tech stack?")) return;
+  if (deletingId.value || !confirm("Are you sure you want to delete this tech stack?")) return;
   
   loadError.value = "";
   const categoryToDelete = props.categories.find((c) => c.id === categoryId);
   if (!categoryToDelete) return;
 
+  deletingId.value = categoryId;
   try {
     if (!props.token) {
       alert("Missing admin token. Please login again.");
@@ -293,6 +303,8 @@ async function handleDeleteCategory(categoryId) {
     emit("update:categories", builtCategories);
   } catch (error) {
     alert(error instanceof Error ? error.message : "Failed to delete tech stack.");
+  } finally {
+    deletingId.value = null;
   }
 }
 </script>
@@ -583,5 +595,26 @@ async function handleDeleteCategory(categoryId) {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  vertical-align: -2px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.7s linear infinite;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>

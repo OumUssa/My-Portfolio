@@ -54,8 +54,10 @@
                 class="action-pill delete-pill"
                 type="button"
                 title="Delete message"
+                :disabled="deletingId === contact.id"
                 @click.stop="handleDeleteContact(contact.id)">
-                <i class="bi bi-trash3"></i> Delete
+                <span v-if="deletingId === contact.id" class="btn-spinner"></span>
+                <i v-else class="bi bi-trash3"></i> {{ deletingId === contact.id ? "Deleting..." : "Delete" }}
               </button>
             </div>
           </button>
@@ -117,6 +119,7 @@ const search = ref("");
 const selectedContact = ref(null);
 const loading = ref(true);
 const error = ref("");
+const deletingId = ref(null);
 
 onMounted(async () => {
   try {
@@ -142,8 +145,9 @@ function selectContact(contact) {
 }
 
 async function handleDeleteContact(id) {
-  if (!confirm("Are you sure you want to delete this message?")) return;
+  if (deletingId.value || !confirm("Are you sure you want to delete this message?")) return;
   
+  deletingId.value = id;
   try {
     await deleteContact(id, props.token);
     contacts.value = contacts.value.filter((c) => c.id !== id);
@@ -152,6 +156,8 @@ async function handleDeleteContact(id) {
     }
   } catch (err) {
     alert("Failed to delete contact.");
+  } finally {
+    deletingId.value = null;
   }
 }
 </script>
@@ -213,5 +219,26 @@ h3 { margin: 0; font-size: 20px; font-weight: 800; color: #1e293b; }
 
 @media (max-width: 900px) {
   .panel-layout { grid-template-columns: 1fr; }
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 6px;
+  vertical-align: -2px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.7s linear infinite;
+}
+
+@keyframes btn-spin {
+  to { transform: rotate(360deg); }
+}
+
+button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
 }
 </style>

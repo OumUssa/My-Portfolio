@@ -1,38 +1,22 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "https://my-portfolio-back-end-1.onrender.com";
+const API_BASE_URL = "https://api-portfolio-back-end.onrender.com";
 
 function normalizeAssetUrl(value) {
   if (!value || typeof value !== "string") {
     return "";
   }
 
-  try {
-    const urlObj = new URL(value);
-    // If backend returns a localhost URL or the backend URL, extract just the path
-    // so we can use relative paths and leverage the Vite proxy / same-origin policy.
-    if (
-      urlObj.hostname === "localhost" ||
-      urlObj.hostname === "127.0.0.1" ||
-      urlObj.hostname.includes("my-portfolio-back-end-1.onrender.com")
-    ) {
-      value = urlObj.pathname;
-    }
-  } catch (e) {
-    // Ignore error if value is a relative path and not a valid absolute URL
-  }
-
   if (/^https?:\/\//i.test(value)) {
     return value;
   }
 
-  let cleanValue = value.startsWith("/") ? value : `/${value}`;
-  
+  let path = value.startsWith("/") ? value : `/${value}`;
+
   // Ensure the path includes /uploads/ if it's a thumbnail file
-  if (!cleanValue.startsWith("/uploads/") && cleanValue.match(/thumbnail-[^/]+\.(png|jpe?g|gif|webp)$/i)) {
-    cleanValue = `/uploads${cleanValue}`;
+  if (!path.startsWith("/uploads/") && path.match(/thumbnail-[^/]+\.(png|jpe?g|gif|webp)$/i)) {
+    path = `/uploads${path}`;
   }
 
-  // Return relative path to utilize Vite's /uploads proxy
-  return cleanValue;
+  return `${API_BASE_URL}${path}`;
 }
 
 function normalizeLink(value) {
@@ -55,51 +39,6 @@ function getCategories(project) {
       : [];
 
   return cats.map((category) => category?.name || category).filter(Boolean);
-}
-
-function splitTags(value) {
-  if (Array.isArray(value)) {
-    return value.map((item) => String(item || "").trim()).filter(Boolean);
-  }
-
-  if (typeof value !== "string") {
-    return [];
-  }
-
-  return value
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-}
-
-function normalizeStoredProject(project) {
-  const category =
-    project.category || project.categories?.[0] || "General Stack";
-  const categories =
-    Array.isArray(project.categories) && project.categories.length
-      ? project.categories.map((item) => item || category).filter(Boolean)
-      : [category];
-  const tags = splitTags(project.tags?.length ? project.tags : project.tech);
-
-  return {
-    id: project.id,
-    adminId: project.adminId || project.admin_id || null,
-    adminName: project.adminName || project.admin_name || "",
-    title: project.title || "Untitled project",
-    desc: project.desc || project.description || "",
-    image: normalizeAssetUrl(project.image || project.thumbnail || ""),
-    liveLink: normalizeLink(
-      project.liveLink || project.link || project.link_your_project || "",
-    ),
-    githubLink: normalizeLink(project.githubLink || project.link_github || ""),
-    openProject: normalizeLink(project.openProject || project.open_project || ""),
-    createdAt: project.createdAt || project.created_at || "",
-    categories,
-    category: categories[0] || "General Stack",
-    tags: tags.length ? tags : [category],
-    status: project.status || "Draft",
-    tech: project.tech || tags.join(", "),
-  };
 }
 
 export function normalizeProject(project) {

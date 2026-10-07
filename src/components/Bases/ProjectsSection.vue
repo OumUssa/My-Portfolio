@@ -68,7 +68,6 @@
             v-for="(project, index) in filteredProjects"
             :key="project.id"
             class="card"
-            v-reveal
             :style="{ transitionDelay: (index % 3) * 90 + 'ms' }">
             <div
               class="card-thumb"
@@ -581,7 +580,6 @@ onMounted(loadProjects);
 }
 .fade-leave-active {
   transition: all 0.2s ease;
-  position: absolute;
 }
 .fade-enter-from {
   opacity: 0;

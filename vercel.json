@@ -2,11 +2,11 @@
   "rewrites": [
     {
       "source": "/api/:match*",
-      "destination": "https://my-portfolio-back-end-1.onrender.com/api/:match*"
+      "destination": "https://api-portfolio-back-end.onrender.com/api/:match*"
     },
     {
       "source": "/uploads/:match*",
-      "destination": "https://my-portfolio-back-end-1.onrender.com/uploads/:match*"
+      "destination": "https://api-portfolio-back-end.onrender.com/uploads/:match*"
     },
     {
       "source": "/(.*)",

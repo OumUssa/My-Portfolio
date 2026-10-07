@@ -122,11 +122,8 @@ const sendEmail = async () => {
     }
   } catch (err) {
     console.error("Error sending message:", err);
-    // Fallback to mailto if API fails
-    const mailtoLink = `mailto:oumussa719@gmail.com?subject=${encodeURIComponent(form.subject)}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`)}`;
-    window.open(mailtoLink, "_blank");
-    statusMsg.value = "Opening your email client as fallback...";
-    statusType.value = "success";
+    statusMsg.value = "Failed to send message. Please try again later.";
+    statusType.value = "error";
   } finally {
     loading.value = false;
     setTimeout(() => { statusMsg.value = ""; }, 6000);
