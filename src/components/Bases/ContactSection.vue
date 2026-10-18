@@ -85,6 +85,9 @@
 <script setup>
 import { ref, reactive } from "vue";
 import { submitContact } from "@/data/contactsApi.js";
+import { useToastStore } from "@/stores/toast";
+
+const toast = useToastStore();
 
 const loading = ref(false);
 const statusMsg = ref("");
@@ -101,6 +104,7 @@ const sendEmail = async () => {
   if (!form.name || !form.email || !form.subject || !form.message) {
     statusMsg.value = "Please fill in all fields.";
     statusType.value = "error";
+    toast.error(statusMsg.value);
     return;
   }
 
@@ -113,6 +117,7 @@ const sendEmail = async () => {
     if (data.result) {
       statusMsg.value = "Message sent successfully! I'll get back to you soon.";
       statusType.value = "success";
+      toast.success("Message sent successfully!");
       form.name = "";
       form.email = "";
       form.subject = "";
@@ -124,6 +129,7 @@ const sendEmail = async () => {
     console.error("Error sending message:", err);
     statusMsg.value = "Failed to send message. Please try again later.";
     statusType.value = "error";
+    toast.error(err instanceof Error && err.message !== "Failed" ? err.message : statusMsg.value);
   } finally {
     loading.value = false;
     setTimeout(() => { statusMsg.value = ""; }, 6000);

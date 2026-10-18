@@ -26,7 +26,7 @@
           <div class="th-actions" style="width: 120px;">Action</div>
         </div>
 
-        <div class="list-stack">
+        <transition-group name="row" tag="div" class="list-stack" appear>
           <button
             v-for="(contact, index) in filteredContacts"
             :key="contact.id || index"
@@ -45,7 +45,7 @@
               </div>
             </div>
 
-            <div class="td-status" style="flex: 2; color: #475569; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+            <div class="td-status ct-subject" style="flex: 2; color: #475569; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               {{ contact.subject }}
             </div>
 
@@ -61,7 +61,7 @@
               </button>
             </div>
           </button>
-        </div>
+        </transition-group>
         
         <div v-if="!filteredContacts.length" class="detail-empty">
           <p>No contact messages found.</p>
@@ -79,21 +79,21 @@
         <p>Click any row to read the full message here.</p>
       </div>
 
-      <div v-else class="hp-card" style="padding: 24px;">
+      <div v-else :key="selectedContact.id" class="hp-card hp-enter" style="padding: 24px;">
         <h3 class="hp-title" style="font-size: 20px; margin-bottom: 8px;">{{ selectedContact.subject }}</h3>
-        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;">
+        <div style="display: flex; gap: 12px; align-items: center; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0;" class="ct-divider">
           <div style="width: 40px; height: 40px; border-radius: 50%; background: #eef2ff; color: #6366f1; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 16px; flex-shrink: 0;">
             {{ selectedContact.name ? selectedContact.name.charAt(0).toUpperCase() : 'U' }}
           </div>
           <div style="overflow: hidden;">
-            <strong style="display: block; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ selectedContact.name }}</strong>
+            <strong class="ct-name" style="display: block; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ selectedContact.name }}</strong>
             <a :href="`mailto:${selectedContact.email}`" style="color: #6366f1; font-size: 13px; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block;">{{ selectedContact.email }}</a>
           </div>
         </div>
-        <div style="color: #334155; line-height: 1.6; font-size: 15px; white-space: pre-wrap;">
+        <div class="ct-msg" style="color: #334155; line-height: 1.6; font-size: 15px; white-space: pre-wrap;">
           {{ selectedContact.message }}
         </div>
-        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; gap: 8px;">
+        <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e2e8f0; display: flex; gap: 8px;" class="ct-divider">
           <a :href="`mailto:${selectedContact.email}?subject=Re: ${selectedContact.subject}`" class="hp-btn hp-edit" style="text-decoration: none;">
             <i class="bi bi-reply"></i> Reply
           </a>
@@ -106,6 +106,9 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { fetchContacts, deleteContact } from "@/data/contactsApi.js";
+import { useToastStore } from "@/stores/toast";
+
+const toast = useToastStore();
 
 const props = defineProps({
   token: {
@@ -127,6 +130,7 @@ onMounted(async () => {
     contacts.value = await fetchContacts(props.token);
   } catch (err) {
     error.value = "Failed to load contacts.";
+    toast.error(error.value);
   } finally {
     loading.value = false;
   }
@@ -154,8 +158,9 @@ async function handleDeleteContact(id) {
     if (selectedContact.value?.id === id) {
       selectedContact.value = null;
     }
+    toast.success("Message deleted successfully.");
   } catch (err) {
-    alert("Failed to delete contact.");
+    toast.error(err instanceof Error ? err.message : "Failed to delete message.");
   } finally {
     deletingId.value = null;
   }
@@ -240,5 +245,22 @@ h3 { margin: 0; font-size: 20px; font-weight: 800; color: #1e293b; }
 button:disabled {
   opacity: 0.7;
   cursor: not-allowed;
+}
+
+.row-enter-active { transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1); }
+.row-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; position: absolute; width: 100%; }
+.row-enter-from { opacity: 0; transform: translateY(12px); }
+.row-leave-to { opacity: 0; transform: translateX(-24px); }
+.row-move { transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1); }
+.list-stack { position: relative; }
+
+.hp-enter { animation: hp-in 0.4s cubic-bezier(0.2, 0.9, 0.3, 1); }
+@keyframes hp-in { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+.action-pill, .hp-btn { transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease; }
+.action-pill:active, .hp-btn:active { transform: scale(0.96); }
+
+@media (prefers-reduced-motion: reduce) {
+  .row-enter-active, .row-leave-active, .row-move, .hp-enter { transition: none; animation: none; }
 }
 </style>

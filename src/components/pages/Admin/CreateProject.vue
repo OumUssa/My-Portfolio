@@ -31,7 +31,7 @@
           <div class="th-actions">Action</div>
         </div>
 
-        <div class="list-stack">
+        <transition-group name="row" tag="div" class="list-stack" appear>
           <button
             v-for="(project, index) in filteredProjects"
             :key="project.id"
@@ -86,7 +86,7 @@
               </button>
             </div>
           </button>
-        </div>
+        </transition-group>
       </div>
     </div>
 
@@ -98,7 +98,7 @@
         <p>Click a project row to preview it here.</p>
       </div>
 
-      <div v-else class="hp-card">
+      <div v-else :key="selectedProject.id" class="hp-card hp-enter">
         <!-- Thumbnail with hover overlay – mirrors home page card -->
         <div
           class="hp-thumb"
@@ -165,8 +165,8 @@
     </div>
 
     <teleport to="body">
-      <transition name="fade">
-        <div v-if="isModalOpen" class="modal-backdrop" @click.self="closeModal">
+      <transition name="sheet">
+        <div v-if="isModalOpen" class="modal-backdrop" @click.self="closeModal" @keydown.esc="closeModal">
           <div class="modal-card">
             <div class="modal-head">
               <div>
@@ -202,26 +202,29 @@
                   v-model="projectForm.githubLink"
                   type="text"
                   placeholder="GitHub URL" />
-                <select v-model="projectForm.status">
-                  <option value="Draft">Draft</option>
-                  <option value="Live">Live</option>
-                  <option value="Archived">Archived</option>
-                </select>
+                <AppSelect v-model="projectForm.status" :options="statusOptions" placeholder="Status" />
 
                 <div class="multi-select-container">
                   <label class="input-label">Tech Stacks (Categories)</label>
-                  <div class="selected-chips">
+                  <div class="used-label">
+                    <i class="bi bi-layers"></i>
+                    This project uses
+                    <strong>{{ projectForm.categoryIds.length }}</strong>
+                    tech stack{{ projectForm.categoryIds.length === 1 ? "" : "s" }}
+                  </div>
+                  <transition-group name="chip" tag="div" class="selected-chips">
                     <span v-for="catId in projectForm.categoryIds" :key="catId" class="chip">
+                      <i class="bi bi-check2-circle"></i>
                       {{ getCategoryName(catId) }}
                       <button type="button" @click.prevent="removeCategory(catId)" class="remove-chip">&times;</button>
                     </span>
-                  </div>
-                  <select @change="addCategory($event)" class="compact-input">
-                    <option value="" disabled selected>Add a Tech Stack...</option>
-                    <option v-for="cat in availableCategories" :key="cat.id" :value="cat.id">
-                      {{ cat.name }}
-                    </option>
-                  </select>
+                  </transition-group>
+                  <AppSelect
+                    v-model="projectForm.categoryIds"
+                    multiple
+                    :options="categoryOptions"
+                    placeholder="Select tech stacks..."
+                    empty-text="No tech stacks yet" />
                 </div>
                 <div class="image-upload-area">
                   <label class="upload-box" :class="{ 'has-image': !!(localImagePreview || projectForm.image), 'is-uploading': uploadingImage }">
@@ -279,6 +282,11 @@
 <script setup>
 import { ref, computed, watch } from "vue";
 import { createProject, updateProject, deleteProject as deleteProjectRequest, uploadThumbnail } from "@/data/projectsApi.js";
+import { useToastStore } from "@/stores/toast";
+import AppSelect from "@/components/layouts/AppSelect.vue";
+import { toAdminProject } from "@/data/adminContent.js";
+
+const toast = useToastStore();
 
 const props = defineProps({
   projects: {
@@ -349,12 +357,21 @@ function getCategoryName(id) {
   return cat ? cat.name : "Unknown";
 }
 
-function addCategory(event) {
-  const id = Number(event.target.value);
+const statusOptions = [
+  { value: "Draft", label: "Draft" },
+  { value: "Live", label: "Live" },
+  { value: "Archived", label: "Archived" },
+];
+
+const categoryOptions = computed(() =>
+  props.categories.map((c) => ({ value: c.id, label: c.name })),
+);
+
+function addCategory(value) {
+  const id = Number(value);
   if (id && !projectForm.value.categoryIds.includes(id)) {
     projectForm.value.categoryIds.push(id);
   }
-  event.target.value = ""; // Reset select
 }
 
 function removeCategory(id) {
@@ -369,6 +386,7 @@ async function onFileChange(event) {
 
   if (!props.token) {
     loadError.value = "Missing admin token. Please login again.";
+    toast.error(loadError.value);
     return;
   }
 
@@ -387,8 +405,10 @@ async function onFileChange(event) {
       imageUrl = res;
     }
     projectForm.value.image = typeof imageUrl === 'string' ? imageUrl : "";
+    toast.success("Image uploaded successfully.");
   } catch (err) {
     loadError.value = err instanceof Error ? err.message : "Failed to upload image.";
+    toast.error(loadError.value);
   } finally {
     uploadingImage.value = false;
     event.target.value = ""; // Reset file input
@@ -496,14 +516,14 @@ function editProject(project) {
     : [];
 
   projectForm.value = {
-    title: project.title,
+    title: project.title || "",
     categoryIds: selectedCatIds,
-    tech: project.tech,
-    link: project.link,
-    openProject: project.openProject,
-    githubLink: project.githubLink,
-    image: project.image,
-    description: project.description,
+    tech: project.tech || (Array.isArray(project.tags) ? project.tags.join(", ") : ""),
+    link: project.link || project.liveLink || "",
+    openProject: project.openProject || "",
+    githubLink: project.githubLink || "",
+    image: project.image || "",
+    description: project.description || project.desc || "",
     status: project.status || "Draft",
   };
   localImagePreview.value = null;
@@ -536,24 +556,33 @@ async function saveProject() {
 
     if (!props.token) {
       loadError.value = "Missing admin token. Please login again.";
+      toast.error(loadError.value);
       return;
     }
 
     let nextProjects = [...props.projects];
     if (editingProjectId.value) {
-      const updated = await updateProject(editingProjectId.value, payload, props.token);
+      const updated = toAdminProject({
+        ...(await updateProject(editingProjectId.value, payload, props.token)),
+        status: payload.status,
+      });
       nextProjects = nextProjects.map((p) => p.id === editingProjectId.value ? updated : p);
       selectedProject.value = updated;
     } else {
-      const created = await createProject(payload, props.token);
+      const created = toAdminProject({
+        ...(await createProject(payload, props.token)),
+        status: payload.status,
+      });
       nextProjects = [created, ...nextProjects];
       selectedProject.value = created;
     }
 
     emit("update:projects", nextProjects);
+    toast.success(editingProjectId.value ? "Project updated successfully." : "Project created successfully.");
     closeModal();
   } catch (err) {
     loadError.value = err instanceof Error ? err.message : "Failed to save project.";
+    toast.error(loadError.value);
   } finally {
     saving.value = false;
   }
@@ -564,14 +593,15 @@ async function handleDeleteProject(projectId) {
   deletingId.value = projectId;
   try {
     if (!props.token) {
-      alert("Missing admin token. Please login again.");
+      toast.error("Missing admin token. Please login again.");
       return;
     }
     await deleteProjectRequest(projectId, props.token);
     const nextProjects = props.projects.filter((project) => project.id !== projectId);
     emit("update:projects", nextProjects);
+    toast.success("Project deleted successfully.");
   } catch (err) {
-    alert(err instanceof Error ? err.message : "Failed to delete project.");
+    toast.error(err instanceof Error ? err.message : "Failed to delete project.");
   } finally {
     deletingId.value = null;
   }
@@ -1044,6 +1074,7 @@ async function handleDeleteProject(projectId) {
 .modal-backdrop {
   position: fixed;
   inset: 0;
+  overflow-y: auto;
   display: grid;
   place-items: center;
   padding: 20px;
@@ -1053,6 +1084,7 @@ async function handleDeleteProject(projectId) {
 }
 
 .modal-card {
+  margin: auto;
   width: min(580px, 100%);
   padding: 24px;
   border-radius: 20px;
@@ -1143,14 +1175,50 @@ async function handleDeleteProject(projectId) {
   color: #ef4444;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.18s ease;
-}
+/* macOS-style sheet: backdrop fades, card springs in */
+.sheet-enter-active { transition: opacity 0.25s ease, backdrop-filter 0.3s ease; }
+.sheet-leave-active { transition: opacity 0.18s ease; }
+.sheet-enter-from, .sheet-leave-to { opacity: 0; backdrop-filter: blur(0); }
+.sheet-enter-active .modal-card { transition: transform 0.4s cubic-bezier(0.2, 1.15, 0.3, 1), opacity 0.25s ease; }
+.sheet-leave-active .modal-card { transition: transform 0.18s ease, opacity 0.18s ease; }
+.sheet-enter-from .modal-card { transform: scale(0.9) translateY(18px); opacity: 0; }
+.sheet-leave-to .modal-card { transform: scale(0.96) translateY(6px); opacity: 0; }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+/* chips */
+.chip-enter-active, .chip-leave-active { transition: all 0.25s cubic-bezier(0.2, 1.2, 0.3, 1); }
+.chip-enter-from, .chip-leave-to { opacity: 0; transform: scale(0.7); }
+.chip-leave-active { position: absolute; }
+.chip-move { transition: transform 0.25s ease; }
+.selected-chips { position: relative; }
+.selected-chips:empty { margin-bottom: 0; }
+.used-label { display: flex; align-items: center; gap: 6px; margin: 0 0 8px; font-size: 13px; color: #64748b; }
+.used-label strong { color: #6366f1; }
+.chip i { color: #6366f1; }
+.chip { padding: 6px 10px; }
+
+/* list rows */
+.row-enter-active { transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1); }
+.row-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; position: absolute; width: 100%; }
+.row-enter-from { opacity: 0; transform: translateY(12px); }
+.row-leave-to { opacity: 0; transform: translateX(-24px); }
+.row-move { transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1); }
+.list-stack { position: relative; }
+
+/* detail card swap */
+.hp-enter { animation: hp-in 0.4s cubic-bezier(0.2, 0.9, 0.3, 1); }
+@keyframes hp-in { from { opacity: 0; transform: translateY(10px) scale(0.98); } to { opacity: 1; transform: none; } }
+
+/* tactile buttons */
+.primary, .secondary, .action-pill, .hp-btn, .modal-close {
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); }
+.primary:active:not(:disabled), .secondary:active, .action-pill:active, .hp-btn:active, .modal-close:active { transform: scale(0.96); }
+.modal-close:hover { transform: rotate(90deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-enter-active, .sheet-leave-active, .sheet-enter-active .modal-card, .sheet-leave-active .modal-card,
+  .row-enter-active, .row-leave-active, .row-move, .chip-enter-active, .chip-leave-active, .hp-enter { transition: none; animation: none; }
 }
 
 .image-upload-area {

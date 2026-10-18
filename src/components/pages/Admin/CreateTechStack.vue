@@ -30,7 +30,7 @@
           <div class="th-actions">Action</div>
         </div>
 
-        <div class="list-stack categories">
+        <transition-group name="row" tag="div" class="list-stack categories" appear>
           <button
             v-for="(category, index) in filteredCategories"
             :key="category.id"
@@ -73,12 +73,12 @@
               </button>
             </div>
           </button>
-        </div>
+        </transition-group>
       </div>
     </div>
 
     <teleport to="body">
-      <transition name="fade">
+      <transition name="sheet">
         <div v-if="isModalOpen" class="modal-backdrop" @click.self="closeModal">
           <div class="modal-card">
             <div class="modal-head">
@@ -122,6 +122,7 @@
 import { ref, computed, watch } from "vue";
 import { createCategory, updateCategory as updateCategoryRequest, deleteCategory as deleteCategoryRequest } from "@/data/categoriesApi.js";
 import { buildCategoryList } from "@/data/adminContent.js";
+import { useToastStore } from "@/stores/toast";
 
 const props = defineProps({
   categories: {
@@ -139,6 +140,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:categories", "update:projects"]);
+const toast = useToastStore();
 
 const categorySearch = ref("");
 const selectedCategory = ref(null);
@@ -218,6 +220,7 @@ async function saveCategory() {
 
     if (!props.token) {
       loadError.value = "Missing admin token. Please login again.";
+      toast.error(loadError.value);
       return;
     }
 
@@ -261,9 +264,11 @@ async function saveCategory() {
     emit("update:categories", builtCategories);
 
     selectedCategory.value = payload;
+    toast.success(editingCategoryId.value ? "Tech stack updated successfully." : "Tech stack created successfully.");
     closeModal();
   } catch (error) {
     loadError.value = error instanceof Error ? error.message : "Failed to save tech stack.";
+    toast.error(loadError.value);
   } finally {
     saving.value = false;
   }
@@ -279,7 +284,7 @@ async function handleDeleteCategory(categoryId) {
   deletingId.value = categoryId;
   try {
     if (!props.token) {
-      alert("Missing admin token. Please login again.");
+      toast.error("Missing admin token. Please login again.");
       return;
     }
 
@@ -301,8 +306,9 @@ async function handleDeleteCategory(categoryId) {
 
     emit("update:projects", nextProjects);
     emit("update:categories", builtCategories);
+    toast.success("Tech stack deleted successfully.");
   } catch (error) {
-    alert(error instanceof Error ? error.message : "Failed to delete tech stack.");
+    toast.error(error instanceof Error ? error.message : "Failed to delete tech stack.");
   } finally {
     deletingId.value = null;
   }
@@ -587,14 +593,33 @@ async function handleDeleteCategory(categoryId) {
   gap: 10px;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.18s ease;
-}
+.modal-backdrop { overflow-y: auto; }
+.modal-card { margin: auto; }
 
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
+.sheet-enter-active { transition: opacity 0.25s ease, backdrop-filter 0.3s ease; }
+.sheet-leave-active { transition: opacity 0.18s ease; }
+.sheet-enter-from, .sheet-leave-to { opacity: 0; backdrop-filter: blur(0); }
+.sheet-enter-active .modal-card { transition: transform 0.4s cubic-bezier(0.2, 1.15, 0.3, 1), opacity 0.25s ease; }
+.sheet-leave-active .modal-card { transition: transform 0.18s ease, opacity 0.18s ease; }
+.sheet-enter-from .modal-card { transform: scale(0.9) translateY(18px); opacity: 0; }
+.sheet-leave-to .modal-card { transform: scale(0.96) translateY(6px); opacity: 0; }
+
+.row-enter-active { transition: opacity 0.4s ease, transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1); }
+.row-leave-active { transition: opacity 0.2s ease, transform 0.2s ease; position: absolute; width: 100%; }
+.row-enter-from { opacity: 0; transform: translateY(12px); }
+.row-leave-to { opacity: 0; transform: translateX(-24px); }
+.row-move { transition: transform 0.35s cubic-bezier(0.2, 0.9, 0.3, 1); }
+
+.primary, .secondary, .action-pill, .modal-close {
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.primary:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35); }
+.primary:active:not(:disabled), .secondary:active, .action-pill:active, .modal-close:active { transform: scale(0.96); }
+.modal-close:hover { transform: rotate(90deg); }
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-enter-active, .sheet-leave-active, .sheet-enter-active .modal-card, .sheet-leave-active .modal-card,
+  .row-enter-active, .row-leave-active, .row-move { transition: none; }
 }
 
 .btn-spinner {

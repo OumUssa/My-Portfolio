@@ -49,6 +49,8 @@
 
       <p v-if="loadError" class="error-banner">{{ loadError }}</p>
 
+      <transition name="section" mode="out-in">
+        <div :key="activeSection" class="section-wrap">
       <Dashboard
         v-if="activeSection === 'dashboard'"
         :projects="projects"
@@ -82,6 +84,8 @@
         <h3 style="margin: 0 0 8px; color: #1e293b; font-size: 20px;">Admin Profile</h3>
         <p style="margin: 0;">This feature will be available soon.</p>
       </div>
+        </div>
+      </transition>
     </main>
   </div>
 </template>
@@ -94,6 +98,7 @@ import { useAuthStore } from "@/stores/auth";
 import { fetchProjects } from "@/data/projectsApi.js";
 import { fetchCategories } from "@/data/categoriesApi.js";
 import { buildCategoryList, toAdminProject } from "@/data/adminContent.js";
+import { useToastStore } from "@/stores/toast";
 
 import Dashboard from "@/components/pages/Admin/Dashboard.vue";
 import CreateProject from "@/components/pages/Admin/CreateProject.vue";
@@ -102,6 +107,7 @@ import ContactManagement from "@/components/pages/Admin/ContactManagement.vue";
 
 const router = useRouter();
 const auth = useAuthStore();
+const toast = useToastStore();
 const { user, token } = storeToRefs(auth);
 
 const menuItems = [
@@ -137,6 +143,7 @@ async function loadDashboardData() {
   } catch (error) {
     loadError.value =
       error instanceof Error ? error.message : "Failed to load dashboard data.";
+    toast.error(loadError.value);
   } finally {
     loading.value = false;
   }
@@ -144,11 +151,138 @@ async function loadDashboardData() {
 
 function logout() {
   auth.logout();
+  toast.success("You have been logged out.");
   router.push({ path: "/login" });
 }
 
 onMounted(loadDashboardData);
 </script>
+
+<style>
+[data-bs-theme="dark"] .admin-shell .dash {
+  --d-text: #f1f5f9; --d-muted: #94a3b8; --d-faint: #64748b;
+  --d-card: #1e293b; --d-border: #334155; --d-line: #2b3a52; --d-icon-bg: rgba(99, 102, 241, 0.18);
+}
+
+/* Admin dark mode — App.vue's global dark rules force colors with !important, so these match that. */
+[data-bs-theme="dark"] .admin-shell { background: #0b1220 !important; color: #e2e8f0; }
+[data-bs-theme="dark"] .admin-shell .sidebar { background: #060b16; box-shadow: 4px 0 24px rgba(0, 0, 0, 0.4); }
+
+[data-bs-theme="dark"] .admin-shell .panel,
+[data-bs-theme="dark"] .admin-shell .modal-card,
+[data-bs-theme="dark"] .admin-shell .list-item,
+[data-bs-theme="dark"] .admin-shell .hp-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  box-shadow: none;
+}
+
+[data-bs-theme="dark"] .admin-shell .search,
+[data-bs-theme="dark"] .admin-shell .compact-input,
+[data-bs-theme="dark"] .admin-shell .form-grid input,
+[data-bs-theme="dark"] .admin-shell .form-grid textarea,
+[data-bs-theme="dark"] .admin-shell .form-grid select,
+[data-bs-theme="dark"] .admin-shell .modal-close,
+[data-bs-theme="dark"] .admin-shell .secondary,
+[data-bs-theme="dark"] .admin-shell .action-pill,
+[data-bs-theme="dark"] .admin-shell .hp-btn {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+[data-bs-theme="dark"] .admin-shell .search:focus,
+[data-bs-theme="dark"] .admin-shell .form-grid input:focus,
+[data-bs-theme="dark"] .admin-shell .form-grid textarea:focus,
+[data-bs-theme="dark"] .admin-shell .form-grid select:focus { border-color: #6366f1 !important; }
+
+[data-bs-theme="dark"] .admin-shell .panel h3,
+[data-bs-theme="dark"] .admin-shell .modal-head h3,
+[data-bs-theme="dark"] .admin-shell .info-text strong,
+[data-bs-theme="dark"] .admin-shell .td-info strong,
+[data-bs-theme="dark"] .admin-shell .hp-title { color: #f1f5f9 !important; }
+
+[data-bs-theme="dark"] .admin-shell .panel p,
+[data-bs-theme="dark"] .admin-shell .table-header,
+[data-bs-theme="dark"] .admin-shell .muted,
+[data-bs-theme="dark"] .admin-shell small,
+[data-bs-theme="dark"] .admin-shell .hp-desc,
+[data-bs-theme="dark"] .admin-shell .detail-empty { color: #94a3b8 !important; }
+
+[data-bs-theme="dark"] .admin-shell .index-badge { background: rgba(99, 102, 241, 0.2) !important; color: #a5b4fc !important; }
+[data-bs-theme="dark"] .admin-shell .item-tag,
+[data-bs-theme="dark"] .admin-shell .items-tag { background: #0f172a !important; color: #cbd5e1 !important; }
+
+[data-bs-theme="dark"] .admin-shell .action-pill:hover,
+[data-bs-theme="dark"] .admin-shell .hp-btn:hover { background: #334155 !important; color: #fff !important; }
+
+[data-bs-theme="dark"] .admin-shell .error-banner {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #fca5a5 !important;
+}
+
+[data-bs-theme="dark"] .admin-shell .workspace .subtitle { color: #c7d2fe !important; }
+[data-bs-theme="dark"] .admin-shell .hero-stat { background: #1e293b; border-color: #334155; }
+[data-bs-theme="dark"] .admin-shell .hero-stat strong { color: #f1f5f9 !important; }
+[data-bs-theme="dark"] .admin-shell .hero-stat small { color: #94a3b8; }
+
+[data-bs-theme="dark"] .admin-shell .ct-name { color: #f1f5f9 !important; }
+[data-bs-theme="dark"] .admin-shell .ct-msg,
+[data-bs-theme="dark"] .admin-shell .ct-subject { color: #cbd5e1 !important; }
+[data-bs-theme="dark"] .admin-shell .ct-divider { border-color: #334155 !important; }
+
+/* Modals are teleported to <body>, so they sit outside .admin-shell */
+[data-bs-theme="dark"] .modal-backdrop { background: rgba(2, 6, 23, 0.65) !important; }
+[data-bs-theme="dark"] .modal-card {
+  background: #1e293b !important;
+  border-color: #334155 !important;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55) !important;
+  color: #e2e8f0;
+}
+[data-bs-theme="dark"] .modal-card h3,
+[data-bs-theme="dark"] .modal-card .chip { color: #f1f5f9 !important; }
+[data-bs-theme="dark"] .modal-card p,
+[data-bs-theme="dark"] .modal-card .input-label,
+[data-bs-theme="dark"] .modal-card small,
+[data-bs-theme="dark"] .modal-card .empty-state span { color: #94a3b8 !important; }
+[data-bs-theme="dark"] .modal-card .eyebrow { color: #818cf8 !important; }
+[data-bs-theme="dark"] .modal-card input,
+[data-bs-theme="dark"] .modal-card textarea,
+[data-bs-theme="dark"] .modal-card select,
+[data-bs-theme="dark"] .modal-card .modal-close,
+[data-bs-theme="dark"] .modal-card .secondary {
+  background: #0f172a !important;
+  border-color: #334155 !important;
+  color: #e2e8f0 !important;
+}
+[data-bs-theme="dark"] .modal-card input::placeholder,
+[data-bs-theme="dark"] .modal-card textarea::placeholder { color: #64748b !important; }
+[data-bs-theme="dark"] .modal-card input:focus,
+[data-bs-theme="dark"] .modal-card textarea:focus { border-color: #6366f1 !important; box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.18); }
+[data-bs-theme="dark"] .modal-card .secondary:hover,
+[data-bs-theme="dark"] .modal-card .modal-close:hover { background: #334155 !important; color: #fff !important; }
+[data-bs-theme="dark"] .modal-card .chip { background: rgba(99, 102, 241, 0.18) !important; border-color: rgba(129, 140, 248, 0.4) !important; }
+[data-bs-theme="dark"] .modal-card .upload-box { background: #0f172a !important; border-color: #334155 !important; }
+[data-bs-theme="dark"] .modal-card .upload-box:hover { border-color: #6366f1 !important; }
+[data-bs-theme="dark"] .modal-card .error-banner {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #fca5a5 !important;
+}
+
+[data-bs-theme="dark"] .modal-card .used-label { color: #94a3b8 !important; }
+[data-bs-theme="dark"] .modal-card .used-label strong { color: #a5b4fc !important; }
+
+/* Section switch + smooth feel */
+.section-enter-active { transition: opacity 0.35s ease, transform 0.45s cubic-bezier(0.2, 0.9, 0.3, 1); }
+.section-leave-active { transition: opacity 0.12s ease; }
+.section-enter-from { opacity: 0; transform: translateY(14px); }
+.section-leave-to { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .section-enter-active, .section-leave-active { transition: none; }
+}
+</style>
 
 <style scoped>
 .admin-shell {
@@ -231,25 +365,42 @@ onMounted(loadDashboardData);
   text-align: left;
   font-size: 14px;
   font-weight: 600;
-  transition: all 0.2s ease;
+  transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, transform 0.2s cubic-bezier(0.3, 1.4, 0.5, 1);
   cursor: pointer;
 }
 
 .menu-item i {
   font-size: 18px;
+  transition: transform 0.25s cubic-bezier(0.3, 1.5, 0.5, 1);
 }
 
-.menu-item:hover,
-.menu-item.active {
+.menu-item:hover i { transform: scale(1.18); }
+.menu-item:active { transform: scale(0.97); }
+.menu-item { animation: menu-in 0.5s cubic-bezier(0.2, 0.9, 0.3, 1) backwards; }
+.menu-item:nth-child(2) { animation-delay: 0.05s; }
+.menu-item:nth-child(3) { animation-delay: 0.1s; }
+.menu-item:nth-child(4) { animation-delay: 0.15s; }
+.menu-item:nth-child(5) { animation-delay: 0.2s; }
+@keyframes menu-in { from { opacity: 0; transform: translateX(-14px); } to { opacity: 1; transform: none; } }
+
+.hero-panel { animation: hero-in 0.6s cubic-bezier(0.2, 0.9, 0.3, 1) backwards; }
+@keyframes hero-in { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-item, .hero-panel { animation: none; }
+}
+
+.menu-item:hover {
   background: #1e293b;
   color: #fff;
-  border-color: #334155;
   transform: translateX(3px);
 }
 
 .menu-item.active {
-  border-left: 3px solid #6366f1;
-  border-radius: 10px;
+  background: linear-gradient(135deg, #6366f1, #7c3aed);
+  color: #fff;
+  border-color: transparent;
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
 }
 
 .sidebar-footer {
@@ -277,7 +428,8 @@ onMounted(loadDashboardData);
 }
 
 .workspace {
-  padding: 24px;
+  padding: 28px;
+  min-width: 0;
   display: grid;
   gap: 20px;
   align-content: start;
@@ -289,10 +441,10 @@ onMounted(loadDashboardData);
   align-items: center;
   justify-content: space-between;
   gap: 20px;
-  border-radius: 16px;
-  background: #241f59e6;
-  border: 1px solid #e2e8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+  border-radius: 20px;
+  background: linear-gradient(120deg, #1e1b4b 0%, #4338ca 55%, #7c3aed 100%);
+  border: 0;
+  box-shadow: 0 18px 40px rgba(79, 70, 229, 0.25);
 }
 
 .eyebrow {
@@ -306,7 +458,7 @@ onMounted(loadDashboardData);
 
 .hero-panel h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 24px;
   font-weight: 800;
   color: #ffffff;
   letter-spacing: -0.5px;
@@ -316,7 +468,7 @@ onMounted(loadDashboardData);
   margin: 6px 0 0;
   max-width: 600px;
   font-size: 14px;
-  color: #98c3ff;
+  color: #c7d2fe;
   line-height: 1.5;
 }
 
@@ -324,8 +476,9 @@ onMounted(loadDashboardData);
   min-width: 150px;
   padding: 16px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
-  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.18);
 }
 
 .stat-label {
@@ -394,14 +547,8 @@ onMounted(loadDashboardData);
     padding: 8px 12px;
   }
 
-  .menu-item:hover,
-  .menu-item.active {
-    transform: translateY(-2px) translateX(0);
-  }
-
-  .menu-item.active {
-    border-left: none;
-    border-bottom: 3px solid #6366f1;
+  .menu-item:hover {
+    transform: none;
   }
 
   .sidebar-footer {

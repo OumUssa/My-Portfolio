@@ -33,7 +33,9 @@
 import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth";
+import { useToastStore } from "@/stores/toast";
 
+const toast = useToastStore();
 const router = useRouter();
 const route = useRoute();
 const auth = useAuthStore();
@@ -54,11 +56,13 @@ async function submit() {
 
     const redirect = route.query.redirect || "/admin";
 
+    toast.success("Welcome back! You signed in successfully.");
     router.push(redirect);
 
   } catch (e) {
     console.error(e);
     error.value = e.message || "Login failed";
+    toast.error(error.value);
   } finally {
     loading.value = false;
   }

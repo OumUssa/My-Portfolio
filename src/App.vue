@@ -2,6 +2,7 @@
 import Header from "@/components/layouts/Header.vue";
 import { useRoute } from "vue-router";
 import { useThemeStore } from "@/stores/theme";
+import ToastContainer from "@/components/layouts/ToastContainer.vue";
 import { onMounted } from "vue";
 
 const route = useRoute();
@@ -22,6 +23,7 @@ onMounted(() => {
         </transition>
       </router-view>
     </main>
+    <ToastContainer />
   </div>
 </template>
 
